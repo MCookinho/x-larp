@@ -103,6 +103,8 @@ function extractTweets(data: any): any[] {
       if (!tweetResult || tweetResult.__typename !== 'Tweet') continue;
       const details = tweetResult.details ?? {};
       const counts = tweetResult.counts ?? {};
+      const mentionEntities: any[] = tweetResult.mention_entities ?? [];
+      const viewsCount = tweetResult.views?.count;
       tweets.push({
         id: tweetResult.rest_id ?? '',
         text: details.full_text ?? '',
@@ -110,12 +112,12 @@ function extractTweets(data: any): any[] {
         retweets: counts.retweet_count ?? 0,
         replies: counts.reply_count ?? 0,
         quotes: counts.quote_count ?? 0,
-        views: 0,
+        views: viewsCount ? Number(viewsCount) : 0,
         bookmarks: counts.bookmark_count ?? 0,
-        mentions: (details.mentions ?? []).map((m: any) => ({
-          username: m.screen_name,
-          name: m.name,
-          id: m.id_str,
+        mentions: mentionEntities.map((m: any) => ({
+          username: m.screen_name ?? '',
+          name: m.screen_name ?? '',
+          id: m.id_str ?? '',
         })),
         createdAt: details.created_at_ms ? new Date(details.created_at_ms).toISOString() : '',
       });
