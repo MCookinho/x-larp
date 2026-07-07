@@ -1,13 +1,13 @@
 import type { Tweet, User, Interaction, FollowerEvent, AccountStats, ContextType } from '../types';
 
 export const contextLabels: Record<ContextType, string> = {
-  resenha: 'Resenha 🍃',
+  resenha: 'Resenha 👀',
   flerte: 'Flerte 😏',
   tristeza: 'Tristeza 😭',
   raiva: 'Raiva 😤',
   reflexao: 'Reflexão 🤔',
   humor: 'Humor 🤡',
-  curiosidade: 'Curiosidade 👀',
+  curiosidade: 'Curiosidade ❓',
   politica: 'Política 🔥',
   nerdola: 'Nerdola 🤓',
   desabafo: 'Desabafo 💔',
