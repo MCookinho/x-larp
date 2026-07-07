@@ -23,6 +23,8 @@ import {
 import { mockWords, mockHourlyActivity } from './data/mockFunData';
 import { isConfigured, fetchScrapedUser, fetchScrapedTweets } from './services/api';
 import type { ScrapedUser, ScrapedTweet } from './services/api';
+import { deriveData, computeAltAccountProb } from './utils/deriveData';
+import type { DerivedData } from './utils/deriveData';
 
 export default function App() {
   const [username, setUsername] = useState<string | null>(null);
@@ -32,6 +34,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [realUser, setRealUser] = useState<ScrapedUser | null>(null);
   const [realTweets, setRealTweets] = useState<ScrapedTweet[]>([]);
+  const [derived, setDerived] = useState<DerivedData | null>(null);
 
   const handleConfigChange = () => setConfigured(isConfigured());
 
@@ -50,6 +53,7 @@ export default function App() {
         ]);
         setRealUser(userData);
         setRealTweets(tweetsData.tweets);
+        setDerived(deriveData(userData, tweetsData.tweets));
         setUsername(user);
         setIsLoading(false);
         return;
@@ -72,35 +76,9 @@ export default function App() {
     }
   }, [error]);
 
-  const hasRealData = realUser !== null;
-  const displayTweets = realTweets.length > 0
-    ? realTweets.map((t, i) => ({
-        id: t.id,
-        text: t.text,
-        likes: t.likes,
-        retweets: t.retweets,
-        replies: t.replies,
-        views: t.views,
-        quotes: t.quotes,
-        bookmarks: t.bookmarks,
-        createdAt: t.createdAt,
-        context: ['resenha', 'humor', 'reflexao', 'desabafo', 'nerdola'][i % 5] as any,
-      }))
-    : mockTweets;
-
-  const displayStats = hasRealData
-    ? {
-        totalTweets: realUser.tweetCount,
-        totalFollowers: realUser.followersCount,
-        totalFollowing: realUser.followingCount,
-        topContext: 'resenha' as const,
-        bestFriend: 'ninguém (dados reais não mostram isso)',
-        cringeLevel: Math.min(99, Math.floor(Math.random() * 40) + 30),
-        ratio: realUser.followersCount > 0
-          ? Number((realUser.followingCount / realUser.followersCount).toFixed(1))
-          : 0,
-      }
-    : mockStats;
+  const hasRealData = derived !== null;
+  const displayTweets: any = hasRealData ? derived.tweets : mockTweets;
+  const displayStats = hasRealData ? derived.stats : mockStats;
 
   return (
     <div className="app">
@@ -167,7 +145,7 @@ export default function App() {
             )}
             {hasRealData && (
               <div className="welcome-mock-notice" style={{ borderColor: 'var(--green)', color: 'var(--green)' }}>
-                ✅ Dados reais de @{realUser.username} carregados!
+                ✅ Dados reais de @{realUser!.username} carregados!
               </div>
             )}
             <div className="welcome-features">
@@ -195,14 +173,23 @@ export default function App() {
       {username && !isLoading && (
         <main className="dashboard">
           <StatsCard stats={displayStats} username={username} />
-          <PersonaBanner />
-          <WordCloud words={mockWords} />
-          <ActivityChart data={mockHourlyActivity} />
-          <Clones />
-          <InteractionCharts interactions={mockInteractions} />
-          <BestFriends friends={bestFriends} />
+          <PersonaBanner
+            cringeLevel={displayStats.cringeLevel}
+            ratio={displayStats.ratio}
+            altAccountProb={derived ? computeAltAccountProb(realTweets, realUser!) : 68}
+          />
+          <WordCloud words={hasRealData ? derived.wordCloud : mockWords} />
+          <ActivityChart data={hasRealData ? derived.hourlyActivity : mockHourlyActivity} />
+          <Clones clones={hasRealData ? derived.clones : undefined} />
+          <InteractionCharts interactions={hasRealData ? derived.interactions : mockInteractions} />
+          <BestFriends friends={hasRealData ? derived.bestFriends : bestFriends} />
           <TweetFilters tweets={displayTweets as any} />
-          <ShameRanking tweets={displayTweets as any} />
+          <ShameRanking
+            tweets={displayTweets as any}
+            translations={hasRealData ? derived.translations : undefined}
+            copypastaScores={hasRealData ? derived.copypastaScores : undefined}
+            shameMessages={hasRealData ? derived.shameMessages : undefined}
+          />
           <FollowerTracker events={mockFollowerEvents} />
         </main>
       )}

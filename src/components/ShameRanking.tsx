@@ -1,13 +1,16 @@
 import type { Tweet } from '../types';
 import { contextLabels } from '../data/mockData';
-import { shameMessages, mockTranslations, mockCopypasta } from '../data/mockFunData';
+import { shameMessages as defaultShameMessages, mockTranslations, mockCopypasta } from '../data/mockFunData';
 
 interface ShameRankingProps {
   tweets: Tweet[];
+  translations?: Record<string, string>;
+  copypastaScores?: Record<string, number>;
+  shameMessages?: string[];
 }
 
-function getShameScore(tweet: Tweet): number {
-  const copypasta = mockCopypasta[tweet.id] ?? 0;
+function getShameScore(tweet: Tweet, copypastaScores?: Record<string, number>): number {
+  const copypasta = copypastaScores?.[tweet.id] ?? mockCopypasta[tweet.id] ?? 0;
   const lowEngagement = tweet.likes < 100 ? 30 : tweet.likes < 500 ? 15 : 0;
   const badRatio = tweet.likes > 0 && tweet.views > 0
     ? Math.max(0, 30 - (tweet.likes / tweet.views) * 10000)
@@ -15,9 +18,10 @@ function getShameScore(tweet: Tweet): number {
   return Math.round(copypasta * 0.4 + lowEngagement + badRatio * 0.3);
 }
 
-export function ShameRanking({ tweets }: ShameRankingProps) {
+export function ShameRanking({ tweets, translations, copypastaScores, shameMessages }: ShameRankingProps) {
+  const msgs = shameMessages ?? defaultShameMessages;
   const ranked = [...tweets]
-    .map((t) => ({ ...t, shame: getShameScore(t) }))
+    .map((t) => ({ ...t, shame: getShameScore(t, copypastaScores) }))
     .sort((a, b) => b.shame - a.shame);
 
   return (
@@ -29,9 +33,9 @@ export function ShameRanking({ tweets }: ShameRankingProps) {
 
       <div className="shame-list">
         {ranked.map((tweet, index) => {
-          const msg = shameMessages[index % shameMessages.length];
-          const translation = mockTranslations[tweet.id];
-          const copypasta = mockCopypasta[tweet.id] ?? 0;
+          const msg = msgs[index % msgs.length];
+          const translation = translations?.[tweet.id] ?? mockTranslations[tweet.id];
+          const copypasta = copypastaScores?.[tweet.id] ?? mockCopypasta[tweet.id] ?? 0;
 
           return (
             <div key={tweet.id} className="shame-card">

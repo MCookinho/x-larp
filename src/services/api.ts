@@ -30,7 +30,6 @@ export interface ScrapedTweet {
 
 export interface ScrapeResult {
   tweets: ScrapedTweet[];
-  guestToken?: string;
 }
 
 export function getProxyUrl(): string | null {

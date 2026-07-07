@@ -1,9 +1,11 @@
 import { mockPersona } from '../data/mockFunData';
 import { cringeLabels, ratioMessages } from '../data/mockFunData';
 
-const CRINGE_VALUE = 73;
-const RATIO_VALUE = 3.2;
-const ALT_ACCOUNT_PROB = 68;
+interface PersonaBannerProps {
+  cringeLevel: number;
+  ratio: number;
+  altAccountProb: number;
+}
 
 function CringeGauge({ value }: { value: number }) {
   const radius = 70;
@@ -56,8 +58,8 @@ function CringeGauge({ value }: { value: number }) {
   );
 }
 
-export function PersonaBanner() {
-  const ratioMsg = ratioMessages[Math.min(Math.floor(RATIO_VALUE), ratioMessages.length - 1)];
+export function PersonaBanner({ cringeLevel, ratio, altAccountProb }: PersonaBannerProps) {
+  const ratioMsg = ratioMessages[Math.min(Math.floor(ratio), ratioMessages.length - 1)];
 
   return (
     <div className="card persona-card">
@@ -82,13 +84,13 @@ export function PersonaBanner() {
         <div className="persona-meters">
           <div className="meter-item">
             <h3 className="meter-title">📈 Nível de Cringe</h3>
-            <CringeGauge value={CRINGE_VALUE} />
+            <CringeGauge value={cringeLevel} />
           </div>
 
           <div className="meter-item">
             <h3 className="meter-title">💀 Like/View Ratio</h3>
             <div className="ratio-display">
-              <span className="ratio-value">{RATIO_VALUE.toFixed(1)}</span>
+              <span className="ratio-value">{ratio.toFixed(1)}</span>
               <span className="ratio-msg">{ratioMsg}</span>
             </div>
           </div>
@@ -99,14 +101,14 @@ export function PersonaBanner() {
               <div className="alt-bar-bg">
                 <div
                   className="alt-bar-fill"
-                  style={{ width: `${ALT_ACCOUNT_PROB}%` }}
+                  style={{ width: `${altAccountProb}%` }}
                 />
               </div>
-              <span className="alt-value">{ALT_ACCOUNT_PROB}% de chance</span>
+              <span className="alt-value">{altAccountProb}% de chance</span>
               <span className="alt-msg">
-                {ALT_ACCOUNT_PROB > 70
+                {altAccountProb > 70
                   ? 'Vaza, Robozinho 🤖'
-                  : ALT_ACCOUNT_PROB > 40
+                  : altAccountProb > 40
                   ? 'Suspeito... 🧐'
                   : 'Humano (provavelmente) ✅'}
               </span>

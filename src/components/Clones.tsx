@@ -1,7 +1,13 @@
 import { mockClones } from '../data/mockFunData';
+import type { Clone } from '../data/mockFunData';
 
-export function Clones() {
-  const sorted = [...mockClones].sort((a, b) => b.percentage - a.percentage);
+interface ClonesProps {
+  clones?: Clone[];
+}
+
+export function Clones({ clones }: ClonesProps) {
+  const data = clones ?? mockClones;
+  const sorted = [...data].sort((a, b) => b.percentage - a.percentage);
 
   return (
     <div className="card">
