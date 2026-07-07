@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Background } from './components/Background';
 import { Header } from './components/Header';
 import { StatsCard } from './components/StatsCard';
@@ -11,6 +11,7 @@ import { WordCloud } from './components/WordCloud';
 import { ActivityChart } from './components/ActivityChart';
 import { Clones } from './components/Clones';
 import { ShameRanking } from './components/ShameRanking';
+import { Settings } from './components/Settings';
 import { FunFooter } from './components/FunFooter';
 import {
   mockTweets,
@@ -20,25 +21,75 @@ import {
   mockStats,
 } from './data/mockData';
 import { mockWords, mockHourlyActivity } from './data/mockFunData';
+import { fetchUser, fetchTweets, getApiConfig } from './services/api';
 
 export default function App() {
   const [username, setUsername] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [apiConnected, setApiConnected] = useState(getApiConfig().configured);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleAnalyze = (user: string) => {
+  const handleConfigChange = () => {
+    setApiConnected(getApiConfig().configured);
+  };
+
+  const handleAnalyze = async (user: string) => {
     setIsLoading(true);
     setUsername(null);
+    setError(null);
+
+    const config = getApiConfig();
+
+    if (config.configured) {
+      try {
+        const xUser = await fetchUser(user);
+        const tweets = await fetchTweets(xUser.id);
+
+        if (tweets.length > 0) {
+          setUsername(user);
+          setIsLoading(false);
+          return;
+        }
+      } catch (err) {
+        console.warn('API failed, falling back to mock data:', err);
+        setError('⚠️ API não respondeu. Usando dados fictícios.');
+      }
+    }
 
     setTimeout(() => {
       setUsername(user);
       setIsLoading(false);
-    }, 1500);
+    }, config.configured ? 500 : 1500);
   };
+
+  useEffect(() => {
+    if (error) {
+      const t = setTimeout(() => setError(null), 5000);
+      return () => clearTimeout(t);
+    }
+  }, [error]);
 
   return (
     <div className="app">
       <Background />
-      <Header onAnalyze={handleAnalyze} isLoading={isLoading} />
+      <Header
+        onAnalyze={handleAnalyze}
+        isLoading={isLoading}
+        onOpenSettings={() => setSettingsOpen(true)}
+      />
+
+      <Settings
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        onConfigChange={handleConfigChange}
+      />
+
+      {error && (
+        <div className="error-banner">
+          <span>{error}</span>
+        </div>
+      )}
 
       {isLoading && (
         <div className="loading-container">
@@ -49,9 +100,15 @@ export default function App() {
             </div>
           </div>
           <p className="loading-text">
-            Hackeando o X pra extrair seus dados...
+            {apiConnected
+              ? 'Puxando dados reais da API do X...'
+              : 'Hackeando o X pra extrair seus dados...'}
             <br />
-            <small>(ou só gerando números aleatórios, você nunca saberá)</small>
+            <small>
+              {apiConnected
+                ? '(tomara que o rate limit não estoure)'
+                : '(ou só gerando números aleatórios, você nunca saberá)'}
+            </small>
           </p>
         </div>
       )}
@@ -64,6 +121,18 @@ export default function App() {
               Cansou de fingir que sua timeline faz sentido? Coloca seu @ aí em cima
               e descobre qual personagem você tá interpretando no X.
             </p>
+            {!apiConnected && (
+              <div className="welcome-mock-notice">
+                <p>
+                  🎭 <strong>Modo zoeira ativado!</strong> Os dados são fictícios por enquanto.
+                  {' '}
+                  <button className="link-btn" onClick={() => setSettingsOpen(true)}>
+                    Configurar API real
+                  </button>
+                  {' '}se quiser dados de verdade.
+                </p>
+              </div>
+            )}
             <div className="welcome-features">
               <div className="feature">
                 <span className="feature-icon">📊</span>

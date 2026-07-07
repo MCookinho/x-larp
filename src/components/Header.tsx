@@ -1,12 +1,15 @@
 import { useState } from 'react';
+import { getApiConfig } from '../services/api';
 
 interface HeaderProps {
   onAnalyze: (username: string) => void;
   isLoading: boolean;
+  onOpenSettings: () => void;
 }
 
-export function Header({ onAnalyze, isLoading }: HeaderProps) {
+export function Header({ onAnalyze, isLoading, onOpenSettings }: HeaderProps) {
   const [input, setInput] = useState('');
+  const apiConfig = getApiConfig();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,9 +24,9 @@ export function Header({ onAnalyze, isLoading }: HeaderProps) {
           X LARP
         </h1>
         <p className="subtitle">
-            🤫 A única verdade sobre o Twitter/X é que todo mundo tá larpando.
-            Nós só estamos aqui pra mostrar que é verdade!!
-          </p>
+          🤫 A única verdade sobre o Twitter/X é que todo mundo tá larpando.
+          Nós só estamos aqui pra mostrar que é verdade!!
+        </p>
       </div>
 
       <form className="search-form" onSubmit={handleSubmit}>
@@ -41,6 +44,18 @@ export function Header({ onAnalyze, isLoading }: HeaderProps) {
           </button>
         </div>
       </form>
+
+      <div className="header-actions">
+        <button className="header-settings-btn" onClick={onOpenSettings}>
+          ⚙️ API {apiConfig.configured ? '✅' : ''}
+        </button>
+        {apiConfig.configured && (
+          <span className="header-api-status">🔌 API conectada</span>
+        )}
+        {!apiConfig.configured && (
+          <span className="header-api-status mock">🎭 Modo zoeira (dados fictícios)</span>
+        )}
+      </div>
 
       <div className="header-disclaimer">
         ⚠️ Esse site é 100% zoeira. Os dados mostrados são fictícios (por enquanto).

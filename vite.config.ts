@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/x-larp/',
+  base: process.env.VERCEL ? '/' : '/x-larp/',
 })

@@ -1,32 +1,58 @@
-# React + TypeScript + Vite
+# 🐦 X LARP
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+> A única verdade sobre o Twitter/X é que todo mundo tá larpando. Nós só estamos aqui pra mostrar que é verdade!!
 
-Currently, two official plugins are available:
+## 🚀 Deploy
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### GitHub Pages (dados fictícios)
 
-## React Compiler
+O site já está em https://mcookinho.github.io/x-larp/ com dados mockados.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Vercel (com API real)
 
-## Expanding the Oxlint configuration
+Pra usar dados reais da API do X:
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm i -g vercel
+vercel
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Configure as variáveis de ambiente no Vercel (opcional) ou use o frontend pra configurar.
+
+## 🔧 Como configurar a API real
+
+1. Crie uma conta em https://developer.twitter.com (gratuito)
+2. Crie um Project + App
+3. Vá em "Keys and tokens" e gere um **Bearer Token** (v2)
+4. Clique no ⚙️ no site → cole a URL do proxy + Bearer Token
+
+## 📡 Proxy API (Vercel)
+
+O proxy Vercel em `api/twitter.ts` faz a ponte entre o frontend e a API do X,
+resolvendo o problema de CORS. O Bearer Token nunca fica armazenado no servidor —
+só é repassado pra API do X.
+
+## 🎭 Funcionalidades
+
+- 📊 Gráficos de interação por contexto (resenha, flerte, tristeza...)
+- 👥 Melhores amigos (quem você mais perturba)
+- 🤔 Classificação de persona + Cringe Meter
+- 🔤 Nuvem de palavras mais usadas
+- ⏰ Relógio comportamental (horário que mais tuíta)
+- 👥 Seus clones (personalidades dos tweets)
+- 🏆 Ranking da vergonha
+- 🔍 Filtros de tweets (mais curtidos, reposts, views...)
+- 🤫 Tradutor de tweet (o que você realmente quis dizer)
+- 📋 Copypasta detector
+- 🕵️ Rastreador de seguidores
+
+## 🛠️ Stack
+
+- React 19 + TypeScript + Vite
+- Recharts (gráficos)
+- Vercel Serverless Functions (proxy API)
+- Tema: Dark Cartoon (Bangers + Fredoka + Comic Neue)
+
+## 📄 Licença
+
+MIT — faça o que quiser, só não leve a sério.
