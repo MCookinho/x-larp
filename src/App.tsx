@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Background } from './components/Background';
 import { Header } from './components/Header';
 import { StatsCard } from './components/StatsCard';
 import { InteractionCharts } from './components/InteractionCharts';
@@ -31,6 +32,7 @@ export default function App() {
 
   return (
     <div className="app">
+      <Background />
       <Header onAnalyze={handleAnalyze} isLoading={isLoading} />
 
       {isLoading && (
