@@ -21,46 +21,48 @@ import {
   mockStats,
 } from './data/mockData';
 import { mockWords, mockHourlyActivity } from './data/mockFunData';
-import { fetchUser, fetchTweets, getApiConfig } from './services/api';
+import { isConfigured, fetchScrapedUser, fetchScrapedTweets } from './services/api';
+import type { ScrapedUser, ScrapedTweet } from './services/api';
 
 export default function App() {
   const [username, setUsername] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [apiConnected, setApiConnected] = useState(getApiConfig().configured);
+  const [configured, setConfigured] = useState(isConfigured());
   const [error, setError] = useState<string | null>(null);
+  const [realUser, setRealUser] = useState<ScrapedUser | null>(null);
+  const [realTweets, setRealTweets] = useState<ScrapedTweet[]>([]);
 
-  const handleConfigChange = () => {
-    setApiConnected(getApiConfig().configured);
-  };
+  const handleConfigChange = () => setConfigured(isConfigured());
 
   const handleAnalyze = async (user: string) => {
     setIsLoading(true);
     setUsername(null);
     setError(null);
+    setRealUser(null);
+    setRealTweets([]);
 
-    const config = getApiConfig();
-
-    if (config.configured) {
+    if (configured) {
       try {
-        const xUser = await fetchUser(user);
-        const tweets = await fetchTweets(xUser.id);
-
-        if (tweets.length > 0) {
-          setUsername(user);
-          setIsLoading(false);
-          return;
-        }
+        const [userData, tweetsData] = await Promise.all([
+          fetchScrapedUser(user),
+          fetchScrapedTweets(user, 100),
+        ]);
+        setRealUser(userData);
+        setRealTweets(tweetsData.tweets);
+        setUsername(user);
+        setIsLoading(false);
+        return;
       } catch (err) {
-        console.warn('API failed, falling back to mock data:', err);
-        setError('⚠️ API não respondeu. Usando dados fictícios.');
+        console.warn('Scraper failed, falling back to mock:', err);
+        setError('⚠️ Scraper não respondeu. Usando dados fictícios.');
       }
     }
 
     setTimeout(() => {
       setUsername(user);
       setIsLoading(false);
-    }, config.configured ? 500 : 1500);
+    }, 1500);
   };
 
   useEffect(() => {
@@ -69,6 +71,36 @@ export default function App() {
       return () => clearTimeout(t);
     }
   }, [error]);
+
+  const hasRealData = realUser !== null;
+  const displayTweets = realTweets.length > 0
+    ? realTweets.map((t, i) => ({
+        id: t.id,
+        text: t.text,
+        likes: t.likes,
+        retweets: t.retweets,
+        replies: t.replies,
+        views: t.views,
+        quotes: t.quotes,
+        bookmarks: t.bookmarks,
+        createdAt: t.createdAt,
+        context: ['resenha', 'humor', 'reflexao', 'desabafo', 'nerdola'][i % 5] as any,
+      }))
+    : mockTweets;
+
+  const displayStats = hasRealData
+    ? {
+        totalTweets: realUser.tweetCount,
+        totalFollowers: realUser.followersCount,
+        totalFollowing: realUser.followingCount,
+        topContext: 'resenha' as const,
+        bestFriend: 'ninguém (dados reais não mostram isso)',
+        cringeLevel: Math.min(99, Math.floor(Math.random() * 40) + 30),
+        ratio: realUser.followersCount > 0
+          ? Number((realUser.followingCount / realUser.followersCount).toFixed(1))
+          : 0,
+      }
+    : mockStats;
 
   return (
     <div className="app">
@@ -100,13 +132,13 @@ export default function App() {
             </div>
           </div>
           <p className="loading-text">
-            {apiConnected
-              ? 'Puxando dados reais da API do X...'
+            {configured
+              ? 'Extraindo dados reais do Twitter...'
               : 'Hackeando o X pra extrair seus dados...'}
             <br />
             <small>
-              {apiConnected
-                ? '(tomara que o rate limit não estoure)'
+              {configured
+                ? '(usando os endpoints secretos do Twitter 🤫)'
                 : '(ou só gerando números aleatórios, você nunca saberá)'}
             </small>
           </p>
@@ -121,16 +153,21 @@ export default function App() {
               Cansou de fingir que sua timeline faz sentido? Coloca seu @ aí em cima
               e descobre qual personagem você tá interpretando no X.
             </p>
-            {!apiConnected && (
+            {!configured && (
               <div className="welcome-mock-notice">
                 <p>
                   🎭 <strong>Modo zoeira ativado!</strong> Os dados são fictícios por enquanto.
                   {' '}
                   <button className="link-btn" onClick={() => setSettingsOpen(true)}>
-                    Configurar API real
+                    Configurar proxy
                   </button>
-                  {' '}se quiser dados de verdade.
+                  {' '}pra buscar dados reais (sem API key).
                 </p>
+              </div>
+            )}
+            {hasRealData && (
+              <div className="welcome-mock-notice" style={{ borderColor: 'var(--green)', color: 'var(--green)' }}>
+                ✅ Dados reais de @{realUser.username} carregados!
               </div>
             )}
             <div className="welcome-features">
@@ -157,15 +194,15 @@ export default function App() {
 
       {username && !isLoading && (
         <main className="dashboard">
-          <StatsCard stats={mockStats} username={username} />
+          <StatsCard stats={displayStats} username={username} />
           <PersonaBanner />
           <WordCloud words={mockWords} />
           <ActivityChart data={mockHourlyActivity} />
           <Clones />
           <InteractionCharts interactions={mockInteractions} />
           <BestFriends friends={bestFriends} />
-          <TweetFilters tweets={mockTweets} />
-          <ShameRanking tweets={mockTweets} />
+          <TweetFilters tweets={displayTweets as any} />
+          <ShameRanking tweets={displayTweets as any} />
           <FollowerTracker events={mockFollowerEvents} />
         </main>
       )}

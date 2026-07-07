@@ -1,116 +1,73 @@
-/// <reference types="vite/client" />
+const PROXY_KEY = 'xlarp_proxy_url';
 
-const PROXY_URL_KEY = 'xlarp_proxy_url';
-const TOKEN_KEY = 'xlarp_bearer_token';
-
-function getProxyUrl(): string | null {
-  return localStorage.getItem(PROXY_URL_KEY);
-}
-
-function getBearerToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY);
-}
-
-export function getApiConfig() {
-  return {
-    proxyUrl: getProxyUrl(),
-    bearerToken: getBearerToken(),
-    configured: !!(getProxyUrl() && getBearerToken()),
-  };
-}
-
-export function setApiConfig(proxyUrl: string, bearerToken: string) {
-  localStorage.setItem(PROXY_URL_KEY, proxyUrl);
-  localStorage.setItem(TOKEN_KEY, bearerToken);
-}
-
-export function clearApiConfig() {
-  localStorage.removeItem(PROXY_URL_KEY);
-  localStorage.removeItem(TOKEN_KEY);
-}
-
-async function fetchXApi(endpoint: string, params: Record<string, string> = {}) {
-  const config = getApiConfig();
-  if (!config.proxyUrl || !config.bearerToken) {
-    throw new Error('API not configured');
-  }
-
-  const query = new URLSearchParams(params).toString();
-  const url = `${config.proxyUrl}?endpoint=${encodeURIComponent(endpoint)}${query ? '&' + query : ''}`;
-
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${config.bearerToken}`,
-    },
-  });
-
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(err.error || `API error: ${response.status}`);
-  }
-
-  return response.json();
-}
-
-export interface XUser {
+export interface ScrapedUser {
   id: string;
   name: string;
   username: string;
   description: string;
-  profile_image_url: string;
-  public_metrics: {
-    followers_count: number;
-    following_count: number;
-    tweet_count: number;
-    listed_count: number;
-    like_count: number;
-  };
+  avatar: string;
+  followersCount: number;
+  followingCount: number;
+  tweetCount: number;
+  likesCount: number;
+  listedCount: number;
   verified: boolean;
-  created_at: string;
+  createdAt: string;
 }
 
-export interface XTweet {
+export interface ScrapedTweet {
   id: string;
   text: string;
-  created_at: string;
-  public_metrics: {
-    like_count: number;
-    retweet_count: number;
-    reply_count: number;
-    quote_count: number;
-    bookmark_count: number;
-    impression_count: number;
-  };
+  likes: number;
+  retweets: number;
+  replies: number;
+  quotes: number;
+  views: number;
+  bookmarks: number;
+  mentions: { username: string; name: string; id: string }[];
+  createdAt: string;
 }
 
-export async function fetchUser(username: string): Promise<XUser> {
-  const data = await fetchXApi(`users/by/username/${username}`, {
-    'user.fields': 'description,profile_image_url,public_metrics,verified,created_at',
-  });
-  return data.data;
+export interface ScrapeResult {
+  tweets: ScrapedTweet[];
+  guestToken?: string;
 }
 
-export async function fetchTweets(userId: string, maxResults = 100): Promise<XTweet[]> {
-  const data = await fetchXApi(`users/${userId}/tweets`, {
-    'tweet.fields': 'created_at,public_metrics',
-    'max_results': String(Math.min(maxResults, 100)),
-    exclude: 'retweets,replies',
-  });
-  return data.data ?? [];
+export function getProxyUrl(): string | null {
+  return localStorage.getItem(PROXY_KEY);
 }
 
-export async function fetchFollowers(userId: string, maxResults = 100): Promise<XUser[]> {
-  const data = await fetchXApi(`users/${userId}/followers`, {
-    'user.fields': 'description,profile_image_url,public_metrics',
-    'max_results': String(Math.min(maxResults, 100)),
-  });
-  return data.data ?? [];
+export function setProxyUrl(url: string) {
+  localStorage.setItem(PROXY_KEY, url);
 }
 
-export async function fetchFollowing(userId: string, maxResults = 100): Promise<XUser[]> {
-  const data = await fetchXApi(`users/${userId}/following`, {
-    'user.fields': 'description,profile_image_url,public_metrics',
-    'max_results': String(Math.min(maxResults, 100)),
-  });
-  return data.data ?? [];
+export function clearProxyUrl() {
+  localStorage.removeItem(PROXY_KEY);
+}
+
+export function isConfigured(): boolean {
+  return !!getProxyUrl();
+}
+
+async function fetchProxy(endpoint: string, params: Record<string, string> = {}): Promise<any> {
+  const proxy = getProxyUrl();
+  if (!proxy) throw new Error('Proxy not configured');
+
+  const query = new URLSearchParams({ ...params, action: endpoint }).toString();
+  const url = `${proxy}?${query}`;
+
+  const res = await fetch(url);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+    throw new Error(err.error || err.details || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function fetchScrapedUser(username: string): Promise<ScrapedUser> {
+  return fetchProxy('user', { username });
+}
+
+export async function fetchScrapedTweets(username: string, count = 100): Promise<ScrapeResult> {
+  return fetchProxy('tweets', { username, count: String(count) });
 }

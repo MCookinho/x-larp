@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getApiConfig } from '../services/api';
+import { isConfigured } from '../services/api';
 
 interface HeaderProps {
   onAnalyze: (username: string) => void;
@@ -9,7 +9,7 @@ interface HeaderProps {
 
 export function Header({ onAnalyze, isLoading, onOpenSettings }: HeaderProps) {
   const [input, setInput] = useState('');
-  const apiConfig = getApiConfig();
+  const configured = isConfigured();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,18 +47,18 @@ export function Header({ onAnalyze, isLoading, onOpenSettings }: HeaderProps) {
 
       <div className="header-actions">
         <button className="header-settings-btn" onClick={onOpenSettings}>
-          ⚙️ API {apiConfig.configured ? '✅' : ''}
+          ⚙️ Proxy {configured ? '✅' : ''}
         </button>
-        {apiConfig.configured && (
-          <span className="header-api-status">🔌 API conectada</span>
+        {configured && (
+          <span className="header-api-status">🔌 Proxy ativo — dados reais</span>
         )}
-        {!apiConfig.configured && (
+        {!configured && (
           <span className="header-api-status mock">🎭 Modo zoeira (dados fictícios)</span>
         )}
       </div>
 
       <div className="header-disclaimer">
-        ⚠️ Esse site é 100% zoeira. Os dados mostrados são fictícios (por enquanto).
+        ⚠️ Esse site é 100% zoeira. Os dados mostrados podem ser fictícios.
         Se você levar a sério, o personagem venceu.
       </div>
     </header>
