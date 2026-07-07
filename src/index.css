@@ -1108,6 +1108,27 @@ body {
   animation: slideDown 0.3s ease-out;
 }
 
+.extension-banner {
+  text-align: center;
+  padding: 10px 16px;
+  background: rgba(179, 136, 255, 0.1);
+  border: 2px solid var(--purple);
+  border-radius: var(--radius-sm);
+  color: var(--purple);
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  animation: slideDown 0.3s ease-out;
+  margin-bottom: 8px;
+}
+
+.extension-banner-icon {
+  font-size: 1.2rem;
+}
+
 @keyframes slideDown {
   from { transform: translateY(-20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }

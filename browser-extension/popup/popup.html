@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+  <title>Larp Social</title>
+</head>
+<body>
+  <div class="larp-popup">
+    <div class="larp-header">
+      <span class="larp-logo">🎭</span>
+      <div>
+        <h1 class="larp-title">Larp Social</h1>
+        <p class="larp-subtitle">Extensão oficial do X LARP</p>
+      </div>
+    </div>
+
+    <div class="larp-status" id="status">
+      <div class="larp-loading" id="loading">
+        <span class="larp-spinner"></span>
+        <span>Verificando cookies...</span>
+      </div>
+      <div class="larp-found" id="found" style="display:none">
+        <span class="larp-check">✅</span>
+        <div>
+          <strong>Cookies encontrados!</strong>
+          <small>auth_token e ct0 disponíveis</small>
+        </div>
+      </div>
+      <div class="larp-missing" id="missing" style="display:none">
+        <span class="larp-cross">❌</span>
+        <div>
+          <strong>Nenhum cookie encontrado</strong>
+          <small>Faça login no <strong>x.com</strong> primeiro</small>
+        </div>
+      </div>
+    </div>
+
+    <div id="actions" style="display:none">
+      <button class="larp-btn" id="refreshBtn">
+        🔄 Verificar novamente
+      </button>
+
+      <a class="larp-link" href="https://mcookinho.github.io/x-larp/" target="_blank">
+        🚀 Abrir X LARP
+      </a>
+
+      <details class="larp-details">
+        <summary>📋 O que essa extensão faz?</summary>
+        <p>A Larp Social lê os cookies <strong>auth_token</strong> e <strong>ct0</strong>
+        da sua sessão do X.com e envia automagicamente pro
+        <a href="https://mcookinho.github.io/x-larp/" target="_blank">X LARP</a>.</p>
+        <p>Isso permite buscar <strong>todos os tweets</strong> de qualquer conta
+        (não só as gigantes) com paginação completa.</p>
+        <p class="larp-muted">🔒 Os cookies ficam só no seu navegador
+        (localStorage) — nunca são enviados pra nenhum servidor além do proxy Vercel.</p>
+      </details>
+    </div>
+
+    <div class="larp-footer">
+      <span>Feito com 💜 por <a href="https://github.com/MCookinho" target="_blank">MCookinho</a></span>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

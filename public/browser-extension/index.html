@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Larp Social — Extensão</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka:wght@400;600;700&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #120a1e;
+      color: #ede4ff;
+      font-family: 'Fredoka', 'Comic Neue', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    .container { max-width: 600px; width: 100%; }
+    h1 {
+      font-family: 'Bangers', cursive;
+      font-size: 2.5rem;
+      color: #b388ff;
+      letter-spacing: 2px;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #6a5080;
+      margin-bottom: 32px;
+      font-size: 1rem;
+    }
+    .card {
+      background: linear-gradient(135deg, #1e1230, #2a1a40);
+      border: 3px solid rgba(255,255,255,.1);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: 6px 6px 0 rgba(0,0,0,.5);
+    }
+    .card h2 {
+      font-family: 'Bangers', cursive;
+      color: #b388ff;
+      font-size: 1.3rem;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    .step {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      align-items: flex-start;
+    }
+    .step-num {
+      background: #b388ff;
+      color: #120a1e;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .step p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #b098d0;
+    }
+    .step code {
+      background: rgba(0,0,0,.3);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      color: #2ED573;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      border: 3px solid #b388ff;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #b388ff, #9c6eff);
+      color: #fff;
+      font-family: 'Bangers', cursive;
+      font-size: 1.4rem;
+      letter-spacing: 2px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: all .15s;
+      box-shadow: 6px 6px 0 rgba(0,0,0,.4);
+    }
+    .btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 8px 8px 0 rgba(0,0,0,.5);
+      filter: brightness(1.1);
+    }
+    .btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 4px 4px 0 rgba(0,0,0,.4);
+    }
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 24px;
+      color: #6a5080;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .back:hover { color: #b388ff; }
+    .browser-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .browser-tab {
+      padding: 8px 16px;
+      border-radius: 10px;
+      border: 2px solid rgba(255,255,255,.1);
+      background: transparent;
+      color: #b098d0;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.85rem;
+      transition: all .15s;
+    }
+    .browser-tab.active {
+      border-color: #b388ff;
+      color: #b388ff;
+      background: rgba(179,136,255,.1);
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎭 LARP SOCIAL</h1>
+    <p class="subtitle">Extensão oficial do X LARP</p>
+
+    <div class="card">
+      <h2>📦 Download</h2>
+      <p style="color:#b098d0;margin-bottom:16px;font-size:0.9rem">
+        A extensão lê os cookies <strong>auth_token</strong> e <strong>ct0</strong>
+        da sua sessão do X.com e envia automagicamente pro X LARP.
+      </p>
+      <a class="btn" href="https://github.com/MCookinho/x-larp/archive/refs/heads/main.zip" target="_blank">⬇️ BAIXAR DO GITHUB</a>
+      <p style="color:#6a5080;font-size:0.82rem;margin-top:8px;text-align:center">
+        Ou se preferir, <a href="../larp-social.tar.gz" style="color:#b388ff">baixe o .tar.gz</a>
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>📖 Como instalar</h2>
+
+      <div class="browser-tabs">
+        <button class="browser-tab active" data-browser="chrome">Chrome / Brave / Edge</button>
+        <button class="browser-tab" data-browser="firefox">Firefox</button>
+      </div>
+
+      <div class="tab-content active" id="tab-chrome">
+        <div class="step">
+          <span class="step-num">1</span>
+          <p>Baixe o <code>larp-social.zip</code> e extraia em uma pasta</p>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <p>Abra <code>chrome://extensions</code></p>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <p>Ative o <strong>Modo do desenvolvedor</strong> (canto superior direito)</p>
+        </div>
+        <div class="step">
+          <span class="step-num">4</span>
+          <p>Clique em <strong>Carregar sem compactação</strong> e selecione a pasta extraída</p>
+        </div>
+        <div class="step">
+          <span class="step-num">5</span>
+          <p>Pronto! Abra o <a href="/" style="color:#b388ff">X LARP</a> — os cookies vão automaticamente! 🎉</p>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-firefox">
+        <div class="step">
+          <span class="step-num">1</span>
+          <p>Baixe o <code>larp-social.zip</code> e extraia em uma pasta</p>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <p>Abra <code>about:debugging#/runtime/this-firefox</code></p>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <p>Clique em <strong>Carregar extensão temporária</strong></p>
+        </div>
+        <div class="step">
+          <span class="step-num">4</span>
+          <p>Selecione o arquivo <code>manifest.json</code> dentro da pasta extraída</p>
+        </div>
+        <div class="step">
+          <span class="step-num">5</span>
+          <p>Pronto! A extensão vai funcionar até você fechar o Firefox.</p>
+        </div>
+        <p style="color:#FFC048;font-size:0.82rem;margin-top:8px">
+          💡 Firefox também suporta extensões no Android!
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🔒 Privacidade</h2>
+      <p style="color:#6a5080;font-size:0.85rem;line-height:1.6">
+        A extensão <strong>não envia</strong> seus cookies pra lugar nenhum.
+        Eles são lidos da sua sessão do X.com e escritos no <strong>localStorage</strong>
+        do X LARP dentro do seu navegador.
+        <br><br>
+        Código-fonte aberto em:
+        <a href="https://github.com/MCookinho/x-larp/tree/main/browser-extension" target="_blank" style="color:#b388ff">
+          github.com/MCookinho/x-larp
+        </a>
+      </p>
+    </div>
+
+    <a class="back" href="..">← Voltar ao X LARP</a>
+  </div>
+
+  <script>
+    document.querySelectorAll('.browser-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.browser-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.browser).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

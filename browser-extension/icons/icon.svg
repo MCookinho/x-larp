@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e1230"/>
+      <stop offset="100%" stop-color="#120a1e"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#bg)" stroke="#b388ff" stroke-width="4"/>
+  <text x="64" y="52" text-anchor="middle" font-size="42" fill="#FFC048">🎭</text>
+  <text x="64" y="72" text-anchor="middle" font-size="12" fill="#b388ff" font-family="sans-serif" font-weight="bold">LARP</text>
+  <text x="64" y="90" text-anchor="middle" font-size="10" fill="#6a5080" font-family="sans-serif">SOCIAL</text>
+  <circle cx="38" cy="100" r="4" fill="#2ED573"/>
+  <circle cx="64" cy="100" r="4" fill="#FF4757"/>
+  <circle cx="90" cy="100" r="4" fill="#4d9eff"/>
+</svg>

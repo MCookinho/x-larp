@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Larp Social",
+  "version": "1.0.0",
+  "description": "Extrai cookies de sessão do X.com e envia pro X LARP — um clique e pronto!",
+  "homepage_url": "https://mcookinho.github.io/x-larp/",
+  "permissions": ["cookies", "storage"],
+  "host_permissions": [
+    "https://x.com/*",
+    "https://mcookinho.github.io/x-larp/*",
+    "https://x-larp.vercel.app/*",
+    "http://localhost:5173/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://mcookinho.github.io/x-larp/*",
+        "https://x-larp.vercel.app/*",
+        "http://localhost:5173/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "Larp Social"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

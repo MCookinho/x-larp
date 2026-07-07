@@ -1,0 +1,185 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 340px;
+  background: #120a1e;
+  color: #ede4ff;
+  font-family: 'Fredoka', 'Comic Neue', sans-serif;
+  overflow-x: hidden;
+}
+
+.larp-popup {
+  padding: 16px;
+}
+
+.larp-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 3px solid rgba(255, 255, 255, .08);
+}
+
+.larp-logo {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.larp-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #b388ff;
+  line-height: 1.2;
+}
+
+.larp-subtitle {
+  font-size: 11px;
+  color: #6a5080;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+.larp-status {
+  margin-bottom: 16px;
+}
+
+.larp-loading,
+.larp-found,
+.larp-missing {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 14px;
+  font-size: 13px;
+}
+
+.larp-loading {
+  background: rgba(179, 136, 255, .08);
+  border: 3px solid rgba(179, 136, 255, .2);
+  color: #b098d0;
+}
+
+.larp-spinner {
+  width: 18px;
+  height: 18px;
+  border: 3px solid rgba(179, 136, 255, .2);
+  border-top-color: #b388ff;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.larp-found {
+  background: rgba(46, 213, 115, .1);
+  border: 3px solid rgba(46, 213, 115, .3);
+  color: #2ED573;
+}
+
+.larp-found small { color: #b098d0; display: block; margin-top: 2px; }
+.larp-found .larp-check { font-size: 24px; }
+
+.larp-missing {
+  background: rgba(255, 71, 87, .1);
+  border: 3px solid rgba(255, 71, 87, .3);
+  color: #FF4757;
+}
+
+.larp-missing small { color: #b098d0; display: block; margin-top: 2px; }
+.larp-missing .larp-cross { font-size: 24px; }
+
+.larp-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border: 3px solid #b388ff;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #b388ff, #9c6eff);
+  color: #fff;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  text-align: center;
+  margin-bottom: 10px;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, .4);
+}
+
+.larp-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, .5);
+  filter: brightness(1.1);
+}
+
+.larp-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, .4);
+}
+
+.larp-link {
+  display: block;
+  text-align: center;
+  padding: 10px;
+  color: #b388ff;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: background .15s;
+  margin-bottom: 12px;
+}
+
+.larp-link:hover {
+  background: rgba(179, 136, 255, .1);
+}
+
+.larp-details {
+  font-size: 12px;
+  color: #b098d0;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.larp-details summary {
+  font-weight: 600;
+  color: #6a5080;
+  padding: 6px 0;
+}
+
+.larp-details p {
+  margin-top: 8px;
+  line-height: 1.5;
+  color: #6a5080;
+}
+
+.larp-details a {
+  color: #b388ff;
+  text-decoration: none;
+}
+
+.larp-muted {
+  font-size: 11px;
+  color: #4a3070;
+  margin-top: 8px;
+}
+
+.larp-footer {
+  text-align: center;
+  padding-top: 12px;
+  border-top: 3px solid rgba(255, 255, 255, .05);
+  font-size: 11px;
+  color: #4a3070;
+}
+
+.larp-footer a {
+  color: #6a5080;
+  text-decoration: none;
+}
+
+.larp-footer a:hover {
+  color: #b388ff;
+}

@@ -35,8 +35,17 @@ export default function App() {
   const [realUser, setRealUser] = useState<ScrapedUser | null>(null);
   const [realTweets, setRealTweets] = useState<ScrapedTweet[]>([]);
   const [derived, setDerived] = useState<DerivedData | null>(null);
+  const [extensionDetected, setExtensionDetected] = useState(false);
 
   const hasAuth = !!(getAuthToken() && getCsrfToken());
+
+  useEffect(() => {
+    function onExtensionLoaded() {
+      setExtensionDetected(true);
+    }
+    window.addEventListener('larp-social-loaded', onExtensionLoaded as EventListener);
+    return () => window.removeEventListener('larp-social-loaded', onExtensionLoaded as EventListener);
+  }, []);
 
   const handleConfigChange = () => setConfigured(isConfigured());
 
@@ -97,6 +106,13 @@ export default function App() {
         onConfigChange={handleConfigChange}
       />
 
+      {extensionDetected && (
+        <div className="extension-banner">
+          <span className="extension-banner-icon">🎭</span>
+          <span><strong>Larp Social</strong> detectada! Cookies importados automaticamente.</span>
+        </div>
+      )}
+
       {error && (
         <div className="error-banner">
           <span>{error}</span>
@@ -146,6 +162,13 @@ export default function App() {
                     Colar cookies
                   </button>
                   {' '}pra buscar dados reais com paginação completa.
+                </p>
+                <p style={{ marginTop: 8 }}>
+                  📦 Ou instale a extensão{' '}
+                  <a className="link-btn" href={`${import.meta.env.BASE_URL}browser-extension/`} target="_blank">
+                    Larp Social
+                  </a>
+                  {' '}— um clique e os cookies vão pro lugar certo!
                 </p>
               </div>
             )}
