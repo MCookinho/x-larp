@@ -1,4 +1,6 @@
 const PROXY_KEY = 'xlarp_proxy_url';
+const AUTH_TOKEN_KEY = 'xlarp_auth_token';
+const CSRF_TOKEN_KEY = 'xlarp_csrf_token';
 
 export interface ScrapedUser {
   id: string;
@@ -30,6 +32,7 @@ export interface ScrapedTweet {
 
 export interface ScrapeResult {
   tweets: ScrapedTweet[];
+  nextCursor: string | null;
 }
 
 export function getProxyUrl(): string | null {
@@ -44,8 +47,43 @@ export function clearProxyUrl() {
   localStorage.removeItem(PROXY_KEY);
 }
 
+export function getAuthToken(): string | null {
+  return localStorage.getItem(AUTH_TOKEN_KEY);
+}
+
+export function setAuthToken(token: string) {
+  localStorage.setItem(AUTH_TOKEN_KEY, token);
+}
+
+export function clearAuthToken() {
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+}
+
+export function getCsrfToken(): string | null {
+  return localStorage.getItem(CSRF_TOKEN_KEY);
+}
+
+export function setCsrfToken(token: string) {
+  localStorage.setItem(CSRF_TOKEN_KEY, token);
+}
+
+export function clearCsrfToken() {
+  localStorage.removeItem(CSRF_TOKEN_KEY);
+}
+
 export function isConfigured(): boolean {
   return !!getProxyUrl();
+}
+
+function buildHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {};
+  const authToken = getAuthToken();
+  const csrfToken = getCsrfToken();
+  if (authToken && csrfToken) {
+    headers['x-auth-token'] = authToken;
+    headers['x-csrf-token'] = csrfToken;
+  }
+  return headers;
 }
 
 async function fetchProxy(endpoint: string, params: Record<string, string> = {}): Promise<any> {
@@ -55,7 +93,7 @@ async function fetchProxy(endpoint: string, params: Record<string, string> = {})
   const query = new URLSearchParams({ ...params, action: endpoint }).toString();
   const url = `${proxy}?${query}`;
 
-  const res = await fetch(url);
+  const res = await fetch(url, { headers: buildHeaders() });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
     throw new Error(err.error || err.details || `HTTP ${res.status}`);
@@ -67,6 +105,23 @@ export async function fetchScrapedUser(username: string): Promise<ScrapedUser> {
   return fetchProxy('user', { username });
 }
 
-export async function fetchScrapedTweets(username: string, count = 100): Promise<ScrapeResult> {
-  return fetchProxy('tweets', { username, count: String(count) });
+export async function fetchScrapedTweets(username: string, count = 100, cursor?: string): Promise<ScrapeResult> {
+  const params: Record<string, string> = { username, count: String(count) };
+  if (cursor) params.cursor = cursor;
+  return fetchProxy('tweets', params);
+}
+
+export async function fetchAllTweets(username: string): Promise<ScrapedTweet[]> {
+  const allTweets: ScrapedTweet[] = [];
+  let cursor: string | null = null;
+  let page = 0;
+
+  do {
+    const result = await fetchScrapedTweets(username, 100, cursor ?? undefined);
+    allTweets.push(...result.tweets);
+    cursor = result.nextCursor;
+    page++;
+  } while (cursor && page < 50);
+
+  return allTweets;
 }

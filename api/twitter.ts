@@ -68,7 +68,6 @@ async function graphqlGet(
   url: string,
   variables: Record<string, unknown>,
   guestToken: string,
-  base: string,
 ): Promise<any> {
   const params = new URLSearchParams({
     variables: JSON.stringify(variables),
@@ -78,6 +77,35 @@ async function graphqlGet(
     headers: {
       Authorization: `Bearer ${BEARER_TOKEN}`,
       'x-guest-token': guestToken,
+      'x-twitter-active-user': 'yes',
+      'User-Agent': UA,
+      Origin: 'https://twitter.com',
+      Referer: 'https://twitter.com/',
+      Accept: 'application/json',
+    },
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`GraphQL ${res.status}: ${text.slice(0, 300)}`);
+  }
+  return res.json();
+}
+
+async function graphqlGetAuth(
+  url: string,
+  variables: Record<string, unknown>,
+  authToken: string,
+  csrfToken: string,
+): Promise<any> {
+  const params = new URLSearchParams({
+    variables: JSON.stringify(variables),
+    features: JSON.stringify(FEATURES),
+  });
+  const res = await fetch(`${url}?${params}`, {
+    headers: {
+      Authorization: `Bearer ${BEARER_TOKEN}`,
+      Cookie: `auth_token=${authToken}; ct0=${csrfToken}`,
+      'x-csrf-token': csrfToken,
       'x-twitter-active-user': 'yes',
       'User-Agent': UA,
       Origin: 'https://twitter.com',
@@ -126,16 +154,64 @@ function extractTweets(data: any): any[] {
   return tweets;
 }
 
+function extractCursor(data: any): string | null {
+  const instructions =
+    data?.data?.user_result_by_screen_name?.result?.profile_timeline_v2?.timeline?.instructions ?? [];
+  for (const inst of instructions) {
+    if (inst.__typename !== 'TimelineAddEntries') continue;
+    for (const entry of inst.entries ?? []) {
+      const eid = entry.entry_id ?? '';
+      if (!eid.includes('cursor-bottom')) continue;
+      const cursorContent = entry?.content?.content;
+      if (cursorContent?.__typename === 'TimelineTimelineCursor') {
+        return cursorContent.cursorValue ?? null;
+      }
+    }
+  }
+  return null;
+}
+
+function extractUserResult(data: any): any {
+  return data?.data?.user_result_by_screen_name?.result;
+}
+
+function formatUser(userResult: any) {
+  return {
+    id: userResult.rest_id ?? '',
+    name: userResult.core?.name ?? '',
+    username: userResult.core?.screen_name ?? '',
+    description: userResult.profile_bio?.description ?? '',
+    avatar: (userResult.avatar?.image_url ?? '').replace('_normal', '_400x400'),
+    banner: userResult.banner?.image_url ?? '',
+    followersCount: userResult.relationship_counts?.followers ?? 0,
+    followingCount: userResult.relationship_counts?.following ?? 0,
+    tweetCount: userResult.tweet_counts?.tweets ?? 0,
+    likesCount: 0,
+    listedCount: 0,
+    verified: !!userResult.verification?.is_blue_verified,
+    createdAt: new Date(Number(userResult.core?.created_at_ms ?? 0)).toISOString(),
+  };
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-auth-token, x-csrf-token');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const action = req.query.action as string | undefined;
+  const authToken = req.headers['x-auth-token'] as string | undefined;
+  const csrfToken = req.headers['x-csrf-token'] as string | undefined;
+  const isAuth = !!(authToken && csrfToken);
 
   try {
-    const { token: guestToken, base } = await getGuestToken();
+    let guestToken = '';
+    let base = 'api';
+    if (!isAuth) {
+      const gt = await getGuestToken();
+      guestToken = gt.token;
+      base = gt.base;
+    }
 
     switch (action) {
       case 'user': {
@@ -148,38 +224,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           withSafetyModeUserFields: false,
           __relay_internal__pv__appviewerisloggedinprovider: false,
         };
-        const result = await graphqlGet(url, variables, guestToken, base);
 
-        const userResult = result?.data?.user_result_by_screen_name?.result;
+        const result = isAuth
+          ? await graphqlGetAuth(url, variables, authToken!, csrfToken!)
+          : await graphqlGet(url, variables, guestToken);
+
+        const userResult = extractUserResult(result);
         if (!userResult) {
           const err = JSON.stringify(result).slice(0, 500);
           return res.status(404).json({ error: 'User not found', details: err });
         }
 
-        return res.json({
-          id: userResult.rest_id ?? '',
-          name: userResult.core?.name ?? '',
-          username: userResult.core?.screen_name ?? '',
-          description: userResult.profile_bio?.description ?? '',
-          avatar: (userResult.avatar?.image_url ?? '').replace('_normal', '_400x400'),
-          banner: userResult.banner?.image_url ?? '',
-          followersCount: userResult.relationship_counts?.followers ?? 0,
-          followingCount: userResult.relationship_counts?.following ?? 0,
-          tweetCount: userResult.tweet_counts?.tweets ?? 0,
-          likesCount: 0,
-          listedCount: 0,
-          verified: !!userResult.verification?.is_blue_verified,
-          createdAt: new Date(Number(userResult.core?.created_at_ms ?? 0)).toISOString(),
-        });
+        return res.json(formatUser(userResult));
       }
 
       case 'tweets': {
         const screenName = req.query.username as string;
         if (!screenName) return res.status(400).json({ error: 'username required' });
         const count = Math.min(Number(req.query.count) || 100, 200);
+        const cursor = req.query.cursor as string | undefined;
 
         const url = graphqlUrl(base, HASHES.UserTweets, 'UserTweets');
-        const variables = {
+        const variables: Record<string, unknown> = {
           userId: '',
           screenName,
           count,
@@ -189,10 +255,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           withV2Timeline: true,
           __relay_internal__pv__appviewerisloggedinprovider: false,
         };
-        const result = await graphqlGet(url, variables, guestToken, base);
-        const tweets = extractTweets(result);
+        if (cursor) variables.cursor = cursor;
 
-        return res.json({ tweets });
+        const result = isAuth
+          ? await graphqlGetAuth(url, variables, authToken!, csrfToken!)
+          : await graphqlGet(url, variables, guestToken);
+
+        const tweets = extractTweets(result);
+        const nextCursor = extractCursor(result);
+
+        return res.json({ tweets, nextCursor });
       }
 
       default:

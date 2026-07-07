@@ -21,7 +21,7 @@ import {
   mockStats,
 } from './data/mockData';
 import { mockWords, mockHourlyActivity } from './data/mockFunData';
-import { isConfigured, fetchScrapedUser, fetchScrapedTweets } from './services/api';
+import { isConfigured, fetchScrapedUser, fetchScrapedTweets, fetchAllTweets, getAuthToken, getCsrfToken } from './services/api';
 import type { ScrapedUser, ScrapedTweet } from './services/api';
 import { deriveData, computeAltAccountProb } from './utils/deriveData';
 import type { DerivedData } from './utils/deriveData';
@@ -36,6 +36,8 @@ export default function App() {
   const [realTweets, setRealTweets] = useState<ScrapedTweet[]>([]);
   const [derived, setDerived] = useState<DerivedData | null>(null);
 
+  const hasAuth = !!(getAuthToken() && getCsrfToken());
+
   const handleConfigChange = () => setConfigured(isConfigured());
 
   const handleAnalyze = async (user: string) => {
@@ -47,13 +49,13 @@ export default function App() {
 
     if (configured) {
       try {
-        const [userData, tweetsData] = await Promise.all([
-          fetchScrapedUser(user),
-          fetchScrapedTweets(user, 100),
-        ]);
+        const userData = await fetchScrapedUser(user);
+        const tweets = hasAuth
+          ? await fetchAllTweets(user)
+          : (await fetchScrapedTweets(user, 100)).tweets;
         setRealUser(userData);
-        setRealTweets(tweetsData.tweets);
-        setDerived(deriveData(userData, tweetsData.tweets));
+        setRealTweets(tweets);
+        setDerived(deriveData(userData, tweets));
         setUsername(user);
         setIsLoading(false);
         return;
@@ -111,12 +113,16 @@ export default function App() {
           </div>
           <p className="loading-text">
             {configured
-              ? 'Extraindo dados reais do Twitter...'
+              ? hasAuth
+                ? 'Pegando todos os tweets (paginando com seus cookies)...'
+                : 'Extraindo dados reais do Twitter...'
               : 'Hackeando o X pra extrair seus dados...'}
             <br />
             <small>
               {configured
-                ? '(usando os endpoints secretos do Twitter 🤫)'
+                ? hasAuth
+                  ? '(autenticado com seus cookies 🔑)'
+                  : '(usando os endpoints secretos do Twitter 🤫)'
                 : '(ou só gerando números aleatórios, você nunca saberá)'}
             </small>
           </p>

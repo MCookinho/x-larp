@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
-import { getProxyUrl, setProxyUrl, clearProxyUrl, isConfigured } from '../services/api';
+import {
+  getProxyUrl, setProxyUrl, clearProxyUrl, isConfigured,
+  getAuthToken, setAuthToken, clearAuthToken,
+  getCsrfToken, setCsrfToken, clearCsrfToken,
+} from '../services/api';
 
 interface SettingsProps {
   isOpen: boolean;
@@ -9,11 +13,15 @@ interface SettingsProps {
 
 export function Settings({ isOpen, onClose, onConfigChange }: SettingsProps) {
   const [proxyUrl, setLocalUrl] = useState(getProxyUrl() || '');
+  const [authToken, setLocalAuth] = useState(getAuthToken() || '');
+  const [csrfToken, setLocalCsrf] = useState(getCsrfToken() || '');
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setLocalUrl(getProxyUrl() || '');
+      setLocalAuth(getAuthToken() || '');
+      setLocalCsrf(getCsrfToken() || '');
       setSaved(false);
     }
   }, [isOpen]);
@@ -23,13 +31,19 @@ export function Settings({ isOpen, onClose, onConfigChange }: SettingsProps) {
   const handleSave = () => {
     if (!proxyUrl.trim()) return;
     setProxyUrl(proxyUrl.trim());
+    if (authToken.trim()) setAuthToken(authToken.trim());
+    if (csrfToken.trim()) setCsrfToken(csrfToken.trim());
     setSaved(true);
     onConfigChange();
   };
 
   const handleClear = () => {
     clearProxyUrl();
+    clearAuthToken();
+    clearCsrfToken();
     setLocalUrl('');
+    setLocalAuth('');
+    setLocalCsrf('');
     setSaved(true);
     onConfigChange();
   };
@@ -74,6 +88,40 @@ export function Settings({ isOpen, onClose, onConfigChange }: SettingsProps) {
               onChange={(e) => setLocalUrl(e.target.value)}
             />
           </label>
+          <label className="settings-label">
+            auth_token (cookie do x.com)
+            <input
+              type="text"
+              className="settings-input"
+              placeholder="Cole o valor do cookie auth_token"
+              value={authToken}
+              onChange={(e) => setLocalAuth(e.target.value)}
+            />
+          </label>
+          <label className="settings-label">
+            ct0 (cookie do x.com)
+            <input
+              type="text"
+              className="settings-input"
+              placeholder="Cole o valor do cookie ct0"
+              value={csrfToken}
+              onChange={(e) => setLocalCsrf(e.target.value)}
+            />
+          </label>
+          <details className="settings-auth-info">
+            <summary>🔑 Onde encontrar esses cookies?</summary>
+            <ol className="settings-steps" style={{ marginTop: 8 }}>
+              <li className="settings-step">Faça login em <strong>x.com</strong> (navegador)</li>
+              <li className="settings-step">Abra o DevTools (F12) → Application → Cookies → x.com</li>
+              <li className="settings-step">Copie os valores de <code>auth_token</code> e <code>ct0</code></li>
+              <li className="settings-step">Cole nos campos acima e salve</li>
+            </ol>
+            <p className="settings-desc" style={{ fontSize: 12 }}>
+              ⚠️ Esses tokens ficam salvos <strong>apenas no seu navegador</strong>
+              (localStorage). O proxy Vercel os usa pra fazer as requisições
+              autenticadas ao X — sem eles, contas pequenas podem não retornar tweets.
+            </p>
+          </details>
         </div>
 
         <div className="settings-actions">
@@ -88,8 +136,7 @@ export function Settings({ isOpen, onClose, onConfigChange }: SettingsProps) {
         </div>
 
         <p className="settings-footer">
-          🔒 Dados públicos de perfis públicos. Não precisa de login.
-          O proxy não armazena nada — só repassa os dados.
+          🔒 Os dados vão direto do proxy pro seu navegador. Nada é armazenado em servidor.
         </p>
       </div>
     </div>
