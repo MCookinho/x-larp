@@ -1147,6 +1147,428 @@ body {
   }
 }
 
+/* === PERSONA BANNER === */
+
+.persona-card {
+  border-color: var(--purple) !important;
+}
+
+.persona-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+
+@media (max-width: 768px) {
+  .persona-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.persona-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.persona-emoji {
+  font-size: 3.5rem;
+  line-height: 1;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+.persona-subtitle {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-family: var(--font-hand);
+}
+
+.persona-desc {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.persona-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.persona-tag {
+  padding: 5px 14px;
+  border: 2px solid var(--border-strong);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.persona-meters {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.meter-item {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  border: 1px solid var(--border-strong);
+}
+
+.meter-title {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+/* Gauge */
+
+.gauge {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gauge-value {
+  position: absolute;
+  bottom: 0;
+  text-align: center;
+}
+
+.gauge-num {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--text);
+  display: block;
+  line-height: 1;
+}
+
+.gauge-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-family: var(--font-hand);
+}
+
+/* Ratio */
+
+.ratio-display {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ratio-value {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  color: var(--yellow);
+  line-height: 1;
+}
+
+.ratio-msg {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-family: var(--font-hand);
+  font-style: italic;
+}
+
+/* Alt account */
+
+.alt-display {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.alt-bar-bg {
+  width: 100%;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 2px solid var(--border-strong);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.alt-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), var(--yellow), var(--red));
+  border-radius: 3px;
+  transition: width 1.5s ease-out;
+}
+
+.alt-value {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.alt-msg {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: var(--font-hand);
+  font-style: italic;
+}
+
+/* === WORD CLOUD === */
+
+.wordcloud {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px 16px;
+  padding: 20px 10px;
+  min-height: 220px;
+}
+
+.wordcloud-word {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  cursor: default;
+  transition: all 0.2s;
+  line-height: 1.3;
+  display: inline-block;
+}
+
+.wordcloud-word:hover {
+  transform: scale(1.3) !important;
+  opacity: 1 !important;
+  text-shadow: 0 0 20px currentColor;
+}
+
+/* === ACTIVITY CHART === */
+
+.activity-peak {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 14px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-family: var(--font-heading);
+}
+
+.activity-peak strong {
+  color: var(--purple);
+}
+
+/* === CLONES === */
+
+.clones-bar {
+  display: flex;
+  height: 28px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: var(--border-width) solid var(--border-strong);
+  margin-bottom: 24px;
+}
+
+.clones-bar-segment {
+  transition: all 0.3s;
+  position: relative;
+}
+
+.clones-bar-segment:hover {
+  filter: brightness(1.3);
+  transform: scaleY(1.1);
+}
+
+.clones-stats {
+  display: grid;
+  gap: 12px;
+}
+
+.clone-item {
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--border-strong);
+  transition: all 0.2s;
+}
+
+.clone-item:hover {
+  transform: translateX(4px);
+}
+
+.clone-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.clone-emoji {
+  font-size: 1.3rem;
+}
+
+.clone-name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+.clone-pct {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.clone-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  font-family: var(--font-hand);
+  margin-left: 32px;
+}
+
+/* === TRANSLATION & COPYPASTA ON TWEETS === */
+
+.filter-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.copypasta-badge {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255, 192, 72, 0.1);
+  border: 1px solid rgba(255, 192, 72, 0.2);
+  color: var(--yellow);
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+
+.copypasta-badge.mid {
+  background: rgba(255, 99, 72, 0.1);
+  border-color: rgba(255, 99, 72, 0.3);
+  color: var(--orange);
+}
+
+.copypasta-badge.high {
+  background: rgba(255, 71, 87, 0.15);
+  border-color: rgba(255, 71, 87, 0.3);
+  color: var(--red);
+}
+
+.tweet-translation {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(179, 136, 255, 0.08);
+  border: 1px dashed rgba(179, 136, 255, 0.2);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: var(--purple);
+}
+
+.tweet-translation em {
+  font-style: italic;
+  font-family: var(--font-hand);
+}
+
+.translate-toggle {
+  border-color: var(--purple) !important;
+  color: var(--purple) !important;
+}
+
+.translate-toggle.active {
+  background: var(--purple) !important;
+  color: white !important;
+  border-color: var(--purple) !important;
+}
+
+/* === SHAME RANKING === */
+
+.shame-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shame-card {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: var(--radius-sm);
+  border: var(--border-width) solid var(--border-strong);
+  border-left: 6px solid var(--red);
+  transition: all 0.3s;
+}
+
+.shame-card:hover {
+  transform: translateX(4px);
+  border-color: var(--orange);
+}
+
+.shame-rank {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--red);
+  min-width: 50px;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.shame-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.shame-msg {
+  font-size: 0.85rem;
+  color: var(--orange);
+  font-style: italic;
+  font-family: var(--font-hand);
+  margin: 6px 0;
+  padding: 4px 10px;
+  background: rgba(255, 99, 72, 0.08);
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.shame-meta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.shame-score {
+  font-size: 0.75rem;
+  font-family: var(--font-heading);
+  color: var(--text-muted);
+  padding: 2px 10px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+}
+
+.shame-copypasta {
+  font-size: 0.75rem;
+  font-family: var(--font-heading);
+  color: var(--yellow);
+  padding: 2px 10px;
+  background: rgba(255, 192, 72, 0.08);
+  border-radius: 10px;
+}
+
+.shame-translation {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: var(--purple);
+  font-family: var(--font-hand);
+}
+
 /* RECHARTS */
 
 .recharts-default-tooltip {

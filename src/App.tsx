@@ -6,6 +6,11 @@ import { InteractionCharts } from './components/InteractionCharts';
 import { BestFriends } from './components/BestFriends';
 import { TweetFilters } from './components/TweetFilters';
 import { FollowerTracker } from './components/FollowerTracker';
+import { PersonaBanner } from './components/PersonaBanner';
+import { WordCloud } from './components/WordCloud';
+import { ActivityChart } from './components/ActivityChart';
+import { Clones } from './components/Clones';
+import { ShameRanking } from './components/ShameRanking';
 import { FunFooter } from './components/FunFooter';
 import {
   mockTweets,
@@ -14,6 +19,7 @@ import {
   bestFriends,
   mockStats,
 } from './data/mockData';
+import { mockWords, mockHourlyActivity } from './data/mockFunData';
 
 export default function App() {
   const [username, setUsername] = useState<string | null>(null);
@@ -23,7 +29,6 @@ export default function App() {
     setIsLoading(true);
     setUsername(null);
 
-    // Simula um delay de "análise" pra dar aquela emoção
     setTimeout(() => {
       setUsername(user);
       setIsLoading(false);
@@ -84,9 +89,14 @@ export default function App() {
       {username && !isLoading && (
         <main className="dashboard">
           <StatsCard stats={mockStats} username={username} />
+          <PersonaBanner />
+          <WordCloud words={mockWords} />
+          <ActivityChart data={mockHourlyActivity} />
+          <Clones />
           <InteractionCharts interactions={mockInteractions} />
           <BestFriends friends={bestFriends} />
           <TweetFilters tweets={mockTweets} />
+          <ShameRanking tweets={mockTweets} />
           <FollowerTracker events={mockFollowerEvents} />
         </main>
       )}

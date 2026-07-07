@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import type { Tweet } from '../types';
 import { filterOptions, contextLabels } from '../data/mockData';
+import { mockTranslations, mockCopypasta } from '../data/mockFunData';
 
 interface TweetFiltersProps {
   tweets: Tweet[];
@@ -9,6 +10,7 @@ interface TweetFiltersProps {
 export function TweetFilters({ tweets }: TweetFiltersProps) {
   const [sortBy, setSortBy] = useState<keyof Tweet>('likes');
   const [contextFilter, setContextFilter] = useState<string>('all');
+  const [showTranslation, setShowTranslation] = useState(false);
 
   const sorted = useMemo(() => {
     let filtered = tweets;
@@ -44,68 +46,95 @@ export function TweetFilters({ tweets }: TweetFiltersProps) {
           </div>
         </div>
 
-        <div className="filter-group">
-          <label className="filter-label">Contexto:</label>
-          <select
-            value={contextFilter}
-            onChange={(e) => setContextFilter(e.target.value)}
-            className="chart-select"
+        <div className="filter-row">
+          <div className="filter-group">
+            <label className="filter-label">Contexto:</label>
+            <select
+              value={contextFilter}
+              onChange={(e) => setContextFilter(e.target.value)}
+              className="chart-select"
+            >
+              <option value="all">Todos 🌈</option>
+              {Object.entries(contextLabels).map(([key, label]) => (
+                <option key={key} value={key}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            className={`filter-btn translate-toggle ${showTranslation ? 'active' : ''}`}
+            onClick={() => setShowTranslation(!showTranslation)}
           >
-            <option value="all">Todos 🌈</option>
-            {Object.entries(contextLabels).map(([key, label]) => (
-              <option key={key} value={key}>
-                {label}
-              </option>
-            ))}
-          </select>
+            {showTranslation ? '🔎 Esconder Tradução' : '🤫 Mostrar Tradução'}
+          </button>
         </div>
       </div>
 
       <div className="tweet-list">
-        {sorted.map((tweet, index) => (
-          <div key={tweet.id} className="tweet-card">
-            <div className="tweet-rank">#{index + 1}</div>
-            <div className="tweet-content">
-              <p className="tweet-text">{tweet.text}</p>
-              <div className="tweet-meta">
-                <span className="tweet-context">{contextLabels[tweet.context]}</span>
-                <span className="tweet-date">
-                  {new Date(tweet.createdAt).toLocaleDateString('pt-BR', {
-                    day: 'numeric',
-                    month: 'short',
-                  })}
-                </span>
+        {sorted.map((tweet, index) => {
+          const copypasta = mockCopypasta[tweet.id] ?? 0;
+          const translation = mockTranslations[tweet.id];
+
+          return (
+            <div key={tweet.id} className="tweet-card">
+              <div className="tweet-rank">#{index + 1}</div>
+              <div className="tweet-content">
+                <p className="tweet-text">{tweet.text}</p>
+                <div className="tweet-meta">
+                  <span className="tweet-context">{contextLabels[tweet.context]}</span>
+                  <span className="tweet-date">
+                    {new Date(tweet.createdAt).toLocaleDateString('pt-BR', {
+                      day: 'numeric',
+                      month: 'short',
+                    })}
+                  </span>
+                  <span className={`copypasta-badge ${copypasta > 50 ? 'high' : copypasta > 20 ? 'mid' : ''}`}>
+                    📋 {copypasta}% copypasta
+                  </span>
+                </div>
+                {showTranslation && translation && (
+                  <div className="tweet-translation">
+                    🤫 <em>{translation}</em>
+                  </div>
+                )}
+              </div>
+              <div className="tweet-stats">
+                <div className="tweet-stat">
+                  <span>❤️</span>
+                  <span>{formatNumber(tweet.likes)}</span>
+                </div>
+                <div className="tweet-stat">
+                  <span>🔁</span>
+                  <span>{formatNumber(tweet.retweets)}</span>
+                </div>
+                <div className="tweet-stat">
+                  <span>💬</span>
+                  <span>{formatNumber(tweet.replies)}</span>
+                </div>
+                <div className="tweet-stat">
+                  <span>👁️</span>
+                  <span>{formatNumber(tweet.views)}</span>
+                </div>
+                <div className="tweet-stat">
+                  <span>📝</span>
+                  <span>{formatNumber(tweet.quotes)}</span>
+                </div>
+                <div className="tweet-stat">
+                  <span>🔖</span>
+                  <span>{formatNumber(tweet.bookmarks)}</span>
+                </div>
               </div>
             </div>
-            <div className="tweet-stats">
-              <div className="tweet-stat">
-                <span>❤️</span>
-                <span>{formatNumber(tweet.likes)}</span>
-              </div>
-              <div className="tweet-stat">
-                <span>🔁</span>
-                <span>{formatNumber(tweet.retweets)}</span>
-              </div>
-              <div className="tweet-stat">
-                <span>💬</span>
-                <span>{formatNumber(tweet.replies)}</span>
-              </div>
-              <div className="tweet-stat">
-                <span>👁️</span>
-                <span>{formatNumber(tweet.views)}</span>
-              </div>
-              <div className="tweet-stat">
-                <span>📝</span>
-                <span>{formatNumber(tweet.quotes)}</span>
-              </div>
-              <div className="tweet-stat">
-                <span>🔖</span>
-                <span>{formatNumber(tweet.bookmarks)}</span>
-              </div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
+
+      <p className="chart-footer">
+        🔍 Ative a "Tradução" pra descobrir o que seus tweets realmente significam.
+        Spoiler: é pior do que você pensa.
+      </p>
     </div>
   );
 }
