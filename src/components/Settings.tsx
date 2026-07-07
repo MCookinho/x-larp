@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
-  getProxyUrl, setProxyUrl, clearProxyUrl, isConfigured,
+  getProxyUrl, setProxyUrl, clearProxyUrl, hasCustomProxy,
   getAuthToken, setAuthToken, clearAuthToken,
   getCsrfToken, setCsrfToken, clearCsrfToken,
 } from '../services/api';
@@ -16,6 +16,8 @@ export function Settings({ isOpen, onClose, onConfigChange }: SettingsProps) {
   const [authToken, setLocalAuth] = useState(getAuthToken() || '');
   const [csrfToken, setLocalCsrf] = useState(getCsrfToken() || '');
   const [saved, setSaved] = useState(false);
+
+  const hasAuthSaved = !!(getAuthToken() && getCsrfToken());
 
   useEffect(() => {
     if (isOpen) {
@@ -38,12 +40,12 @@ export function Settings({ isOpen, onClose, onConfigChange }: SettingsProps) {
   };
 
   const handleClear = () => {
-    clearProxyUrl();
     clearAuthToken();
     clearCsrfToken();
-    setLocalUrl('');
+    if (hasCustomProxy()) clearProxyUrl();
     setLocalAuth('');
     setLocalCsrf('');
+    setLocalUrl(getProxyUrl());
     setSaved(true);
     onConfigChange();
   };
@@ -52,38 +54,23 @@ export function Settings({ isOpen, onClose, onConfigChange }: SettingsProps) {
     <div className="settings-overlay" onClick={onClose}>
       <div className="settings-modal" onClick={(e) => e.stopPropagation()}>
         <button className="settings-close" onClick={onClose}>✕</button>
-        <h2 className="settings-title">🌐 Configurar Proxy</h2>
+        <h2 className="settings-title">🔧 Configurações</h2>
         <p className="settings-desc">
-          O X LARP usa os mesmos endpoints que o próprio Twitter/X usa internamente
-          pra buscar dados públicos — sem precisar de API key!
+          O proxy Vercel já vem configurado de fábrica 🎉
           <br /><br />
-          Você só precisa de um proxy (Vercel, Cloudflare Worker) pra resolver o CORS.
+          Se quiser usar seu próprio proxy (ex: fork do projeto), é só editar a URL abaixo.
           <br />
-          Sem proxy configurado? O site usa dados fictícios 🎭
+          Pra buscar <strong>todos</strong> os tweets (incluindo contas pequenas),
+          cole seus cookies de autenticação do X.
         </p>
-
-        <div className="settings-steps">
-          <div className="settings-step">
-            <span className="settings-step-num">1</span>
-            <span>Instale o Vercel CLI: <code>npm i -g vercel</code></span>
-          </div>
-          <div className="settings-step">
-            <span className="settings-step-num">2</span>
-            <span>Na pasta do projeto: <code>vercel --prod</code></span>
-          </div>
-          <div className="settings-step">
-            <span className="settings-step-num">3</span>
-            <span>Cole a URL gerada (ex: <code>xlarp.vercel.app/api/twitter</code>)</span>
-          </div>
-        </div>
 
         <div className="settings-fields">
           <label className="settings-label">
-            URL do Proxy
+            Proxy URL (opcional — padrão já funciona)
             <input
               type="url"
               className="settings-input"
-              placeholder="https://xlarp.vercel.app/api/twitter"
+              placeholder="https://x-larp.vercel.app"
               value={proxyUrl}
               onChange={(e) => setLocalUrl(e.target.value)}
             />
@@ -128,15 +115,16 @@ export function Settings({ isOpen, onClose, onConfigChange }: SettingsProps) {
           <button className="settings-btn save" onClick={handleSave}>
             {saved ? '✅ Salvo!' : '💾 Salvar'}
           </button>
-          {isConfigured() && (
+          {(hasCustomProxy() || hasAuthSaved) && (
             <button className="settings-btn clear" onClick={handleClear}>
-              🗑️ Remover
+              🗑️ Limpar cookies
             </button>
           )}
         </div>
 
         <p className="settings-footer">
-          🔒 Os dados vão direto do proxy pro seu navegador. Nada é armazenado em servidor.
+          🔒 Tokens ficam salvos <strong>apenas no seu navegador</strong> (localStorage).
+          Nada é enviado pra servidores além do proxy Vercel.
         </p>
       </div>
     </div>

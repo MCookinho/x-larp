@@ -1,3 +1,4 @@
+const DEFAULT_PROXY = 'https://x-larp.vercel.app';
 const PROXY_KEY = 'xlarp_proxy_url';
 const AUTH_TOKEN_KEY = 'xlarp_auth_token';
 const CSRF_TOKEN_KEY = 'xlarp_csrf_token';
@@ -35,8 +36,12 @@ export interface ScrapeResult {
   nextCursor: string | null;
 }
 
-export function getProxyUrl(): string | null {
-  return localStorage.getItem(PROXY_KEY);
+export function getProxyUrl(): string {
+  return localStorage.getItem(PROXY_KEY) || DEFAULT_PROXY;
+}
+
+export function hasCustomProxy(): boolean {
+  return !!localStorage.getItem(PROXY_KEY);
 }
 
 export function setProxyUrl(url: string) {
@@ -72,7 +77,7 @@ export function clearCsrfToken() {
 }
 
 export function isConfigured(): boolean {
-  return !!getProxyUrl();
+  return true;
 }
 
 function buildHeaders(): Record<string, string> {
@@ -88,7 +93,6 @@ function buildHeaders(): Record<string, string> {
 
 async function fetchProxy(endpoint: string, params: Record<string, string> = {}): Promise<any> {
   const proxy = getProxyUrl();
-  if (!proxy) throw new Error('Proxy not configured');
 
   const query = new URLSearchParams({ ...params, action: endpoint }).toString();
   const url = `${proxy}?${query}`;

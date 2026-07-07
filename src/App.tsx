@@ -137,15 +137,15 @@ export default function App() {
               Cansou de fingir que sua timeline faz sentido? Coloca seu @ aí em cima
               e descobre qual personagem você tá interpretando no X.
             </p>
-            {!configured && (
+            {!hasAuth && (
               <div className="welcome-mock-notice">
                 <p>
-                  🎭 <strong>Modo zoeira ativado!</strong> Os dados são fictícios por enquanto.
+                  🎭 <strong>Modo zoeira ativado!</strong> Dados fictícios (ou guest mode).
                   {' '}
                   <button className="link-btn" onClick={() => setSettingsOpen(true)}>
-                    Configurar proxy
+                    Colar cookies
                   </button>
-                  {' '}pra buscar dados reais (sem API key).
+                  {' '}pra buscar dados reais com paginação completa.
                 </p>
               </div>
             )}
