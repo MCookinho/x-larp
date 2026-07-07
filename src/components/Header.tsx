@@ -21,9 +21,9 @@ export function Header({ onAnalyze, isLoading }: HeaderProps) {
           X LARP
         </h1>
         <p className="subtitle">
-          A única verdade sobre o <strong>X/twitter</strong> é que todo mundo tá
-          representando um personagem. Nós só estamos aqui pra expor.
-        </p>
+            🤫 A única verdade sobre o Twitter/X é que todo mundo tá larpando.
+            Nós só estamos aqui pra mostrar que é verdade!!
+          </p>
       </div>
 
       <form className="search-form" onSubmit={handleSubmit}>

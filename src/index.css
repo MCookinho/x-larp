@@ -186,11 +186,6 @@ body {
   font-weight: 700;
 }
 
-.subtitle::before {
-  content: '🗣️';
-  margin-right: 4px;
-}
-
 /* SEARCH */
 
 .search-form {
