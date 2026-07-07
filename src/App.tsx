@@ -54,7 +54,7 @@ export default function App() {
       {!username && !isLoading && (
         <div className="welcome">
           <div className="welcome-content">
-            <h2 className="welcome-title">Bem-vindo ao X LARP 🎭</h2>
+            <h2 className="welcome-title">Bem-vindo ao X LARP 🐦</h2>
             <p className="welcome-text">
               Cansou de fingir que sua timeline faz sentido? Coloca seu @ aí em cima
               e descobre qual personagem você tá interpretando no X.

@@ -17,7 +17,7 @@ export function Header({ onAnalyze, isLoading }: HeaderProps) {
     <header className="header">
       <div className="header-top">
         <h1 className="title">
-          <span className="title-icon">🎭</span>
+          <span className="title-icon">🐦</span>
           X LARP
         </h1>
         <p className="subtitle">

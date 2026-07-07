@@ -19,7 +19,7 @@ export function FunFooter() {
             🐙 GitHub
           </a>
           <span className="footer-sep">|</span>
-          <span>🎭 X LARP v1.0</span>
+          <span>🐦 X LARP v1.0</span>
           <span className="footer-sep">|</span>
           <span>🏴‍☠️ Não leve a sério</span>
         </div>
