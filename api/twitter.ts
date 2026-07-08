@@ -264,13 +264,54 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (!uid) return res.status(404).json({ error: 'User not found' });
 
         const url = graphqlUrl(base, HASHES.UserTweets, 'UserTweets');
-        const variables: Record<string, unknown> = {
+        const vars: Record<string, unknown> = {
           userId: uid,
           count,
           includePromotedContent: true,
           withQuickPromoteEligibilityTweetFields: true,
-          withVoice: true,
+          withVoice: false,
+          rweb_video_screen_enabled: false,
+          rweb_cashtags_enabled: false,
+          profile_label_improvements_pcf_label_in_post_enabled: false,
+          responsive_web_profile_redirect_enabled: false,
+          rweb_tipjar_consumption_enabled: true,
+          verified_phone_label_enabled: false,
+          creator_subscriptions_tweet_preview_api_enabled: false,
+          responsive_web_graphql_timeline_navigation_enabled: true,
+          responsive_web_graphql_skip_user_profile_image_extensions_enabled: false,
+          premium_content_api_read_enabled: false,
+          communities_web_enable_tweet_community_results_fetch: false,
+          c9s_tweet_anatomy_moderator_badge_enabled: false,
+          responsive_web_grok_analyze_button_fetch_trends_enabled: false,
+          responsive_web_grok_analyze_post_followups_enabled: false,
+          rweb_cashtags_composer_attachment_enabled: false,
+          responsive_web_jetfuel_frame: false,
+          responsive_web_grok_share_attachment_enabled: false,
+          responsive_web_grok_annotations_enabled: false,
+          articles_preview_enabled: false,
+          responsive_web_edit_tweet_api_enabled: false,
+          rweb_conversational_replies_downvote_enabled: false,
+          graphql_is_translatable_rweb_tweet_is_translatable_enabled: false,
+          view_counts_everywhere_api_enabled: false,
+          longform_notetweets_consumption_enabled: true,
+          responsive_web_twitter_article_tweet_consumption_enabled: false,
+          content_disclosure_indicator_enabled: false,
+          content_disclosure_ai_generated_indicator_enabled: false,
+          responsive_web_grok_show_grok_translated_post: false,
+          responsive_web_grok_analysis_button_from_backend: false,
+          post_ctas_fetch_enabled: false,
+          freedom_of_speech_not_reach_fetch_enabled: false,
+          standardized_nudges_misinfo: false,
+          tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled: false,
+          longform_notetweets_rich_text_read_enabled: false,
+          longform_notetweets_inline_media_enabled: true,
+          responsive_web_grok_image_annotation_enabled: false,
+          responsive_web_grok_imagine_annotation_enabled: false,
+          responsive_web_grok_community_note_auto_translation_is_enabled: false,
+          responsive_web_enhance_cards_enabled: false,
         };
+        if (cursor) vars.cursor = cursor;
+        const variables = vars;
         if (cursor) variables.cursor = cursor;
 
         const result = isAuth
@@ -280,7 +321,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const tweets = extractTweets(result);
         const nextCursor = extractCursor(result);
 
-        return res.json(result);
+        return res.json({ tweets, nextCursor });
       }
 
       default:
