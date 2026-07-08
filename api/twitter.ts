@@ -276,7 +276,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const tweets = extractTweets(result);
         const nextCursor = extractCursor(result);
 
-        return res.json({ tweets, nextCursor, _debugInstructions: timelineInstructions(result).map((i: any) => i.__typename) });
+        return res.json({
+          tweets, nextCursor,
+          _data: Object.keys(result?.data ?? {}),
+          _keys: Object.keys(result?.data?.user?.result ?? {}).slice(0,20),
+        });
       }
 
       default:
