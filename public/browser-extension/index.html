@@ -556,6 +556,7 @@
     const isChrome = (ua.includes('chrome') || ua.includes('chromium')) && !isEdge && !isBrave && !isOpera && !isVivaldi;
     const isFirefox = ua.includes('firefox');
     const isSafari = ua.includes('safari') && !ua.includes('chrome') && !ua.includes('chromium') && !ua.includes('edg') && !ua.includes('opr') && !ua.includes('brave') && !ua.includes('vivaldi') && !ua.includes('firefox');
+    const isChromium = isEdge || isBrave || isOpera || isVivaldi || isSamsung || isChrome || isSafari;
 
     const tabs = document.querySelectorAll('.browser-tab');
     const contents = {
@@ -569,95 +570,24 @@
     const downloadText = document.getElementById('downloadText');
     const browserHint = document.getElementById('browserHint');
 
-    function setChromium(name, emoji, hint) {
-      badge.className = 'detected';
-      badge.innerHTML = `${emoji} ${name} detectado!`;
-      downloadIcon.textContent = emoji;
-      downloadText.textContent = 'BAIXAR .ZIP';
-      browserHint.textContent = hint || `${name} · Chrome · Brave · Edge`;
-      downloadLink.href = '../larp-social.zip';
+    function setBadge(className, icon, label, btnText, hint, href, downloadAttr) {
+      badge.className = className || 'detected';
+      badge.innerHTML = `${icon} ${label}`;
+      downloadIcon.textContent = icon;
+      downloadText.textContent = btnText;
+      browserHint.textContent = hint;
+      downloadLink.href = href;
+      if (downloadAttr) downloadLink.download = downloadAttr;
     }
-
-    // Determine browser and update badge
-    let browserName = 'desktop';
-    let browserEmoji = '🌐';
-    let browserHintText = '';
 
     if (isAndroid) {
-      browserName = 'android';
-      browserEmoji = '📱';
-      browserHintText = 'Firefox Android';
-    } else if (isEdge) {
-      browserName = 'edge';
-      browserEmoji = '🌐';
-      browserHintText = 'Edge (Chromium) · Chrome · Brave';
-    } else if (isBrave) {
-      browserName = 'brave';
-      browserEmoji = '🦁';
-      browserHintText = 'Brave · Chrome · Edge';
-    } else if (isOpera) {
-      browserName = 'opera';
-      browserEmoji = '🟢';
-      browserHintText = 'Opera · Chrome · Brave · Edge';
-    } else if (isVivaldi) {
-      browserName = 'vivaldi';
-      browserEmoji = '🟣';
-      browserHintText = 'Vivaldi · Chrome · Brave · Edge';
-    } else if (isSamsung) {
-      browserName = 'samsung';
-      browserEmoji = '📱';
-      browserHintText = 'Samsung Internet · Chrome · Brave · Edge';
-    } else if (isChrome) {
-      browserName = 'chrome';
-      browserEmoji = '🌐';
-      browserHintText = 'Chrome · Brave · Edge';
-    } else if (isSafari) {
-      browserName = 'safari';
-      browserEmoji = '🍏';
-      browserHintText = 'Safari · use Chrome ou Firefox para a extensão';
+      setBadge('detected', '📱', 'Android detectado!', 'BAIXAR PARA ANDROID', 'Firefox Android · arraste .xpi', '../larp-social.zip');
     } else if (isFirefox) {
-      browserName = 'firefox';
-      browserEmoji = '🦊';
-      browserHintText = 'Firefox · arraste pro navegador';
+      setBadge('detected', '🦊', 'Firefox detectado!', 'BAIXAR .XPI', 'Firefox · arraste pro navegador', '../larp-social.xpi', 'larp-social.xpi');
+    } else if (isChromium) {
+      setBadge('detected', '🌐', 'Chromium detectado!', 'BAIXAR .ZIP', 'Chrome · Brave · Edge · Opera · Vivaldi', '../larp-social.zip');
     } else {
-      browserName = 'unknown';
-      browserEmoji = '🤷';
-      browserHintText = 'Navegador não identificado — veja as abas acima';
-    }
-
-    const labelMap = {
-      android: 'Firefox Android',
-      edge: 'Edge',
-      brave: 'Brave',
-      opera: 'Opera',
-      vivaldi: 'Vivaldi',
-      samsung: 'Samsung Internet',
-      chrome: 'Chrome',
-      safari: 'Safari',
-      firefox: 'Firefox',
-      unknown: 'não identificado',
-    };
-
-    if (browserName === 'unknown') {
-      badge.className = 'not-detected';
-      badge.innerHTML = '🤷 Navegador não identificado — veja as abas acima';
-    } else if (browserName === 'android') {
-      badge.className = 'detected';
-      badge.innerHTML = '📱 Firefox Android detectado!';
-      downloadIcon.textContent = '📱';
-      downloadText.textContent = 'BAIXAR PARA ANDROID';
-      browserHint.textContent = 'Firefox Android';
-      downloadLink.href = '../larp-social.zip';
-    } else if (browserName === 'firefox') {
-      badge.className = 'detected';
-      badge.innerHTML = '🦊 Firefox detectado!';
-      downloadIcon.textContent = '🦊';
-      downloadText.textContent = 'BAIXAR .XPI';
-      browserHint.textContent = 'Firefox · arraste pro navegador';
-      downloadLink.href = '../larp-social.xpi';
-      downloadLink.download = 'larp-social.xpi';
-    } else {
-      setChromium(labelMap[browserName], browserEmoji, browserHintText);
+      setBadge('not-detected', '🤷', 'Navegador não identificado — veja as abas acima', 'BAIXAR .ZIP', 'Chrome · Brave · Edge · Opera · Vivaldi', '../larp-social.zip');
     }
 
     // Determine initial tab
