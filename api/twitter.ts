@@ -353,28 +353,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const tweets = extractTweets(result);
         const nextCursor = extractCursor(result);
 
-        if (!nextCursor && tweets.length > 0) {
-          const addEntries = result?.data?.user?.result?.timeline?.timeline?.instructions
-            ?.find((i: any) => (i.__typename ?? i.type) === 'TimelineAddEntries');
-          const entries = addEntries?.entries ?? addEntries?.entry ?? [];
-          return res.json({
-            tweets: tweets.slice(0, 2),
-            nextCursor,
-            _debug: {
-              entryCount: entries.length,
-              allEntryIds: (entries ?? []).map((e: any) => e.entryId ?? e.entry_id),
-              entryWithCursor: entries.find((e: any) => (e.entryId ?? e.entry_id ?? '').toLowerCase().includes('cursor')),
-              nonTweet: entries.filter((e: any) => !(e.entryId ?? '').startsWith('tweet-')).slice(0, 3).map((e: any) => ({
-                id: e.entryId ?? e.entry_id,
-                contentKeys: Object.keys(e.content ?? {}),
-                entryType: e.content?.entryType,
-                contentType: e.content?.__typename,
-              })),
-              firstEntry: { entryId: entries[0]?.entryId, contentKeys: Object.keys(entries[0]?.content ?? {}), itemContentKeys: entries[0]?.content?.itemContent ? Object.keys(entries[0].content.itemContent) : null },
-            },
-          });
-        }
-
         return res.json({ tweets, nextCursor });
       }
 
