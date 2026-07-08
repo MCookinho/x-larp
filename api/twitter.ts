@@ -4,8 +4,8 @@ const BEARER_TOKEN =
   'AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA';
 
 const HASHES = {
-  UserByScreenName: '_kuJi4oIDFMUU-N285gZWg',
-  UserTweets: 'DB_vu_NZ4VBjuRch2CjW3w',
+  UserByScreenName: '2qvSHpkWTMS9i0zJAwDNiA',
+  UserTweets: 'hr4gzZONlq23okjU8fIe_A',
 };
 
 const FEATURES = {
@@ -220,9 +220,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         const url = graphqlUrl(base, HASHES.UserByScreenName, 'UserByScreenName');
         const variables = {
-          screenName,
-          withSafetyModeUserFields: false,
-          __relay_internal__pv__appviewerisloggedinprovider: false,
+          screen_name: screenName,
         };
 
         const result = isAuth
@@ -244,16 +242,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const count = Math.min(Number(req.query.count) || 100, 200);
         const cursor = req.query.cursor as string | undefined;
 
+        const userId = req.query.userId as string | undefined;
+
+        const userUrl = graphqlUrl(base, HASHES.UserByScreenName, 'UserByScreenName');
+        const userVars = { screen_name: screenName };
+        const userResult = isAuth
+          ? await graphqlGetAuth(userUrl, userVars, authToken!, csrfToken!)
+          : await graphqlGet(userUrl, userVars, guestToken);
+        const uid = userId || extractUserResult(userResult)?.rest_id;
+        if (!uid) return res.status(404).json({ error: 'User not found' });
+
         const url = graphqlUrl(base, HASHES.UserTweets, 'UserTweets');
         const variables: Record<string, unknown> = {
-          userId: '',
-          screenName,
+          userId: uid,
           count,
-          includePromotedContent: false,
+          includePromotedContent: true,
           withQuickPromoteEligibilityTweetFields: true,
           withVoice: true,
-          withV2Timeline: true,
-          __relay_internal__pv__appviewerisloggedinprovider: false,
         };
         if (cursor) variables.cursor = cursor;
 
@@ -265,25 +270,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const nextCursor = extractCursor(result);
 
         return res.json({ tweets, nextCursor });
-      }
-
-      case 'debug': {
-        const screenName = req.query.username as string;
-        const url = graphqlUrl(base, HASHES.UserTweets, 'UserTweets');
-        const variables: Record<string, unknown> = {
-          userId: '',
-          screenName,
-          count: 5,
-          includePromotedContent: false,
-          withQuickPromoteEligibilityTweetFields: true,
-          withVoice: true,
-          withV2Timeline: true,
-          __relay_internal__pv__appviewerisloggedinprovider: false,
-        };
-        const result = isAuth
-          ? await graphqlGetAuth(url, variables, authToken!, csrfToken!)
-          : await graphqlGet(url, variables, guestToken);
-        return res.json(result);
       }
 
       default:
