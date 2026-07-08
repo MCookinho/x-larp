@@ -16,120 +16,266 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 20px;
+      overflow-x: hidden;
     }
-    .container { max-width: 600px; width: 100%; }
-    h1 {
-      font-family: 'Bangers', cursive;
-      font-size: 2.5rem;
-      color: #b388ff;
-      letter-spacing: 2px;
+
+    /* === FLOATING EMOJIS === */
+    .floating-emojis {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-20px) rotate(5deg); }
+      75% { transform: translateY(10px) rotate(-3deg); }
+    }
+    .floating-emojis span {
+      position: absolute;
+      font-size: 2rem;
+      opacity: .12;
+      animation: float 6s ease-in-out infinite;
+    }
+    .floating-emojis span:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; }
+    .floating-emojis span:nth-child(2) { top: 20%; right: 10%; animation-delay: 1s; font-size: 3rem; }
+    .floating-emojis span:nth-child(3) { top: 50%; left: 3%; animation-delay: 2s; }
+    .floating-emojis span:nth-child(4) { top: 60%; right: 5%; animation-delay: .5s; }
+    .floating-emojis span:nth-child(5) { bottom: 15%; left: 15%; animation-delay: 3s; font-size: 2.5rem; }
+    .floating-emojis span:nth-child(6) { top: 35%; right: 3%; animation-delay: 1.5s; }
+    .floating-emojis span:nth-child(7) { bottom: 25%; right: 20%; animation-delay: 2.5s; }
+
+    /* === HERO === */
+    .hero {
+      position: relative;
+      z-index: 1;
+      width: 100%;
       text-align: center;
+      padding: 48px 20px 32px;
+      background: linear-gradient(180deg, rgba(179,136,255,.08) 0%, transparent 100%);
+    }
+    @keyframes bounceIn {
+      0% { transform: scale(0); opacity: 0; }
+      60% { transform: scale(1.15); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .hero-logo {
+      font-size: 4rem;
+      display: block;
       margin-bottom: 8px;
+      animation: bounceIn .6s cubic-bezier(.34,1.56,.64,1);
     }
-    .subtitle {
-      text-align: center;
-      color: #6a5080;
-      margin-bottom: 32px;
-      font-size: 1rem;
-    }
-    .card {
-      background: linear-gradient(135deg, #1e1230, #2a1a40);
-      border: 3px solid rgba(255,255,255,.1);
-      border-radius: 20px;
-      padding: 24px;
-      margin-bottom: 16px;
-      box-shadow: 6px 6px 0 rgba(0,0,0,.5);
-    }
-    .card h2 {
+    .hero h1 {
       font-family: 'Bangers', cursive;
+      font-size: clamp(2.2rem, 8vw, 3.5rem);
       color: #b388ff;
-      font-size: 1.3rem;
-      letter-spacing: 1px;
-      margin-bottom: 12px;
+      letter-spacing: 3px;
+      text-shadow: 3px 3px 0 rgba(0,0,0,.5);
     }
-    .step {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 16px;
-      align-items: flex-start;
+    .hero-sub {
+      color: #6a5080;
+      font-size: clamp(0.9rem, 3vw, 1.1rem);
+      margin-top: 4px;
+      font-family: 'Comic Neue', cursive;
     }
-    .step-num {
-      background: #b388ff;
-      color: #120a1e;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
+    .hero p {
+      color: #b098d0;
+      font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+      max-width: 500px;
+      margin: 12px auto 0;
+      line-height: 1.6;
+    }
+
+    /* === DOWNLOAD BUTTON === */
+    .download-section {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+      padding: 0 20px;
+      margin: 8px auto 0;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(179,136,255,.4); }
+      50% { box-shadow: 0 0 0 12px rgba(179,136,255,0); }
+    }
+    .download-btn {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
-      font-size: 14px;
-      flex-shrink: 0;
-    }
-    .step p {
-      font-size: 0.9rem;
-      line-height: 1.6;
-      color: #b098d0;
-    }
-    .step code {
-      background: rgba(0,0,0,.3);
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-size: 0.82rem;
-      color: #2ED573;
-    }
-    .btn {
-      display: block;
+      gap: 12px;
       width: 100%;
-      padding: 16px;
+      padding: 18px 24px;
       border: 3px solid #b388ff;
-      border-radius: 20px;
+      border-radius: 18px;
       background: linear-gradient(135deg, #b388ff, #9c6eff);
       color: #fff;
       font-family: 'Bangers', cursive;
-      font-size: 1.4rem;
+      font-size: clamp(1.2rem, 4vw, 1.5rem);
       letter-spacing: 2px;
       cursor: pointer;
-      text-align: center;
       text-decoration: none;
       transition: all .15s;
       box-shadow: 6px 6px 0 rgba(0,0,0,.4);
+      animation: pulse-glow 2s ease-in-out 3;
+      position: relative;
     }
-    .btn:hover {
+    .download-btn:hover {
       transform: translate(-2px, -2px);
       box-shadow: 8px 8px 0 rgba(0,0,0,.5);
       filter: brightness(1.1);
     }
-    .btn:active {
+    .download-btn:active {
       transform: translate(2px, 2px);
       box-shadow: 4px 4px 0 rgba(0,0,0,.4);
     }
-    .back {
-      display: block;
-      text-align: center;
-      margin-top: 24px;
-      color: #6a5080;
-      text-decoration: none;
-      font-size: 0.9rem;
+    .download-btn .btn-icon {
+      font-size: 1.6rem;
+      line-height: 1;
     }
-    .back:hover { color: #b388ff; }
+    .download-hint {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: #6a5080;
+      font-family: 'Comic Neue', cursive;
+    }
+    .download-hint strong { color: #b098d0; }
+
+    /* === BROWSER BADGE === */
+    .browser-badge {
+      text-align: center;
+      margin: 16px auto 0;
+      position: relative;
+      z-index: 1;
+    }
+    .browser-badge span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: 'Fredoka', sans-serif;
+      border: 2px solid rgba(255,255,255,.1);
+    }
+    .browser-badge .detected {
+      background: rgba(46,213,115,.1);
+      border-color: rgba(46,213,115,.3);
+      color: #2ED573;
+    }
+    .browser-badge .not-detected {
+      background: rgba(255,192,72,.1);
+      border-color: rgba(255,192,72,.2);
+      color: #FFC048;
+    }
+
+    /* === STEPS === */
+    .steps-section {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 550px;
+      padding: 0 20px;
+      margin: 24px auto 0;
+    }
+    .steps-card {
+      background: linear-gradient(135deg, #1e1230, #2a1a40);
+      border: 3px solid rgba(255,255,255,.08);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 6px 6px 0 rgba(0,0,0,.5);
+    }
+    .steps-card h2 {
+      font-family: 'Bangers', cursive;
+      color: #b388ff;
+      font-size: 1.3rem;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .step-list { display: flex; flex-direction: column; gap: 0; }
+    .step-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+    }
+    .step-item:last-child { border-bottom: none; }
+    .step-num {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #b388ff, #9c6eff);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      font-family: 'Fredoka', sans-serif;
+      box-shadow: 2px 2px 0 rgba(0,0,0,.3);
+    }
+    .step-item p {
+      font-size: 0.88rem;
+      line-height: 1.5;
+      color: #b098d0;
+      padding-top: 4px;
+    }
+    .step-item code {
+      background: rgba(0,0,0,.3);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: #2ED573;
+      font-family: 'Courier New', monospace;
+    }
+    .step-item strong { color: #ede4ff; }
+    .step-item .highlight {
+      display: inline-block;
+      background: rgba(179,136,255,.15);
+      padding: 2px 10px;
+      border-radius: 6px;
+      color: #b388ff;
+      font-weight: 600;
+    }
+    .step-item .emoji { font-size: 1.2rem; margin-right: 4px; }
+    .step-tip {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: rgba(255,192,72,.08);
+      border: 2px solid rgba(255,192,72,.15);
+      border-radius: 12px;
+      font-size: 0.82rem;
+      color: #FFC048;
+      font-family: 'Comic Neue', cursive;
+    }
+
+    /* === TABS === */
     .browser-tabs {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       margin-bottom: 16px;
+      flex-wrap: wrap;
     }
     .browser-tab {
-      padding: 8px 16px;
-      border-radius: 10px;
-      border: 2px solid rgba(255,255,255,.1);
+      padding: 8px 14px;
+      border-radius: 12px;
+      border: 2px solid rgba(255,255,255,.08);
       background: transparent;
-      color: #b098d0;
+      color: #6a5080;
       cursor: pointer;
-      font-family: inherit;
-      font-size: 0.85rem;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
       transition: all .15s;
     }
+    .browser-tab:hover { border-color: rgba(179,136,255,.3); color: #b098d0; }
     .browser-tab.active {
       border-color: #b388ff;
       color: #b388ff;
@@ -137,104 +283,354 @@
     }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
+
+    /* === INFO CARDS === */
+    .info-section {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 550px;
+      padding: 0 20px;
+      margin: 16px auto 0;
+    }
+    .info-card {
+      background: linear-gradient(135deg, #1e1230, #2a1a40);
+      border: 3px solid rgba(255,255,255,.08);
+      border-radius: 20px;
+      padding: 20px 24px;
+      box-shadow: 6px 6px 0 rgba(0,0,0,.5);
+      margin-bottom: 16px;
+    }
+    .info-card h2 {
+      font-family: 'Bangers', cursive;
+      color: #b388ff;
+      font-size: 1.15rem;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .info-card p {
+      font-size: 0.85rem;
+      color: #6a5080;
+      line-height: 1.6;
+    }
+    .info-card a { color: #b388ff; text-decoration: none; }
+    .info-card a:hover { text-decoration: underline; }
+
+    /* === FEATURES GRID === */
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      background: rgba(0,0,0,.15);
+      border-radius: 12px;
+      font-size: 0.82rem;
+      color: #b098d0;
+    }
+    .feature-item .fi { font-size: 1.1rem; }
+
+    /* === BACK LINK === */
+    .back-section {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 24px 20px;
+    }
+    .back-link {
+      color: #6a5080;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-family: 'Comic Neue', cursive;
+      transition: color .15s;
+    }
+    .back-link:hover { color: #b388ff; }
+
+    /* === FOOTER === */
+    .footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 16px 20px 32px;
+      font-size: 0.78rem;
+      color: #4a3070;
+      font-family: 'Comic Neue', cursive;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 480px) {
+      .hero { padding: 32px 16px 20px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .step-item { gap: 10px; }
+      .step-item p { font-size: 0.82rem; }
+      .browser-tab { font-size: 0.78rem; padding: 6px 10px; }
+    }
+
+    /* === ANIMATIONS === */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .anim-in { animation: fadeUp .5s ease-out both; }
+    .anim-in-d1 { animation-delay: .1s; }
+    .anim-in-d2 { animation-delay: .2s; }
+    .anim-in-d3 { animation-delay: .3s; }
+    .anim-in-d4 { animation-delay: .4s; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🎭 LARP SOCIAL</h1>
-    <p class="subtitle">Extensão oficial do X LARP</p>
+  <div class="floating-emojis">
+    <span>🎭</span> <span>🐦</span> <span>🍪</span>
+    <span>🔗</span> <span>🤫</span> <span>🎪</span> <span>💜</span>
+  </div>
 
-    <div class="card">
-      <h2>📦 Download</h2>
-      <p style="color:#b098d0;margin-bottom:16px;font-size:0.9rem">
-        A extensão lê os cookies <strong>auth_token</strong> e <strong>ct0</strong>
-        da sua sessão do X.com e envia automagicamente pro X LARP.
-      </p>
-      <a class="btn" href="../larp-social.zip" download>⬇️ BAIXAR EXTENSÃO</a>
-    </div>
+  <section class="hero anim-in">
+    <span class="hero-logo">🎭</span>
+    <h1>LARP SOCIAL</h1>
+    <p class="hero-sub">Extensão oficial do X LARP</p>
+    <p>
+      Conecte sua conta do X em <strong>1 clique</strong> — sem copiar nada,
+      sem salvar nada. A extensão faz tudo sozinha.
+    </p>
+  </section>
 
-    <div class="card">
+  <div class="download-section anim-in anim-in-d1">
+    <a class="download-btn" id="downloadLink" href="../larp-social.zip" download>
+      <span class="btn-icon" id="downloadIcon">⬇️</span>
+      <span id="downloadText">BAIXAR EXTENSÃO</span>
+    </a>
+    <p class="download-hint" id="downloadHint">
+      📦 <strong>larp-social.zip</strong> · 15 KB · <span id="browserHint">Chrome · Brave · Edge · Firefox</span>
+    </p>
+  </div>
+
+  <div class="browser-badge anim-in anim-in-d2" id="browserBadge">
+    <span class="not-detected" id="badgeContent">🔍 Detectando seu navegador...</span>
+  </div>
+
+  <section class="steps-section anim-in anim-in-d2" id="stepsSection">
+    <div class="steps-card">
       <h2>📖 Como instalar</h2>
 
-      <div class="browser-tabs">
+      <div class="browser-tabs" id="browserTabs">
         <button class="browser-tab active" data-browser="chrome">Chrome / Brave / Edge</button>
         <button class="browser-tab" data-browser="firefox">Firefox</button>
+        <button class="browser-tab" data-browser="android">📱 Android</button>
       </div>
 
+      <!-- CHROME -->
       <div class="tab-content active" id="tab-chrome">
-        <div class="step">
-          <span class="step-num">1</span>
-          <p>Baixe o <code>larp-social.zip</code> e extraia em uma pasta</p>
+        <div class="step-list">
+          <div class="step-item">
+            <span class="step-num">1</span>
+            <p>Baixe o <code>larp-social.zip</code> e <strong>extraia</strong> em uma pasta</p>
+          </div>
+          <div class="step-item">
+            <span class="step-num">2</span>
+            <p>Abra <code>chrome://extensions</code></p>
+          </div>
+          <div class="step-item">
+            <span class="step-num">3</span>
+            <p>Ative <span class="highlight">Modo do desenvolvedor</span> (canto superior direito)</p>
+          </div>
+          <div class="step-item">
+            <span class="step-num">4</span>
+            <p>Clique em <span class="highlight">Carregar sem compactação</span> e selecione a pasta</p>
+          </div>
+          <div class="step-item">
+            <span class="step-num">🎉</span>
+            <p><strong>Pronto!</strong> Abra o <a href=".." style="color:#b388ff">X LARP</a> e veja a mágica</p>
+          </div>
         </div>
-        <div class="step">
-          <span class="step-num">2</span>
-          <p>Abra <code>chrome://extensions</code></p>
+        <div class="step-tip">💡 A extensão funciona até você remover ou desativar.</div>
+      </div>
+
+      <!-- FIREFOX DESKTOP -->
+      <div class="tab-content" id="tab-firefox">
+        <div class="step-list">
+          <div class="step-item">
+            <span class="step-num">1</span>
+            <p><strong>Baixe</strong> o arquivo <code>larp-social.xpi</code> <span class="emoji">⬇️</span></p>
+          </div>
+          <div class="step-item">
+            <span class="step-num">2</span>
+            <p><strong>Arraste</strong> o arquivo <code>.xpi</code> pra dentro do Firefox</p>
+          </div>
+          <div class="step-item">
+            <span class="step-num">3</span>
+            <p>Clique em <span class="highlight">Adicionar</span> quando o Firefox perguntar</p>
+          </div>
+          <div class="step-item">
+            <span class="step-num">🎉</span>
+            <p><strong>Instalada!</strong> Vá pro <a href=".." style="color:#b388ff">X LARP</a> — os cookies vão automaticamente</p>
+          </div>
         </div>
-        <div class="step">
-          <span class="step-num">3</span>
-          <p>Ative o <strong>Modo do desenvolvedor</strong> (canto superior direito)</p>
-        </div>
-        <div class="step">
-          <span class="step-num">4</span>
-          <p>Clique em <strong>Carregar sem compactação</strong> e selecione a pasta extraída</p>
-        </div>
-        <div class="step">
-          <span class="step-num">5</span>
-          <p>Pronto! Abra o <a href="/" style="color:#b388ff">X LARP</a> — os cookies vão automaticamente! 🎉</p>
+        <div class="step-tip">
+          🔄 Alternativa: <code>about:debugging#/runtime/this-firefox</code> → Carregar Temporária → selecione o <code>manifest.json</code> da pasta extraída
         </div>
       </div>
 
-      <div class="tab-content" id="tab-firefox">
-        <div class="step">
-          <span class="step-num">1</span>
-          <p>Baixe o <code>larp-social.zip</code> e extraia em uma pasta</p>
+      <!-- ANDROID (Firefox) -->
+      <div class="tab-content" id="tab-android">
+        <div class="step-list">
+          <div class="step-item">
+            <span class="step-num">1</span>
+            <p>No Firefox Android, abra <code>about:debugging#/runtime/this-firefox</code></p>
+          </div>
+          <div class="step-item">
+            <span class="step-num">2</span>
+            <p>Toque em <span class="highlight">Carregar Extensão Temporária</span></p>
+          </div>
+          <div class="step-item">
+            <span class="step-num">3</span>
+            <p>Selecione o arquivo <code>larp-social.zip</code> que você baixou</p>
+          </div>
+          <div class="step-item">
+            <span class="step-num">4</span>
+            <p>Toque em <span class="highlight">manifest.json</span> dentro do zip</p>
+          </div>
+          <div class="step-item">
+            <span class="step-num">🎉</span>
+            <p><strong>Instalada!</strong> Vá pro <a href=".." style="color:#b388ff">X LARP</a></p>
+          </div>
         </div>
-        <div class="step">
-          <span class="step-num">2</span>
-          <p>Abra <code>about:debugging#/runtime/this-firefox</code></p>
+        <div class="step-tip">
+          📱 Firefox Android suporta extensões! Precisa do <strong>Firefox</strong> (não é Firefox Focus).
         </div>
-        <div class="step">
-          <span class="step-num">3</span>
-          <p>Clique em <strong>Carregar extensão temporária</strong></p>
-        </div>
-        <div class="step">
-          <span class="step-num">4</span>
-          <p>Selecione o arquivo <code>manifest.json</code> dentro da pasta extraída</p>
-        </div>
-        <div class="step">
-          <span class="step-num">5</span>
-          <p>Pronto! A extensão vai funcionar até você fechar o Firefox.</p>
-        </div>
-        <p style="color:#FFC048;font-size:0.82rem;margin-top:8px">
-          💡 Firefox também suporta extensões no Android!
-        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="info-section anim-in anim-in-d3">
+    <div class="info-card">
+      <h2>✨ O que ela faz?</h2>
+      <div class="features-grid">
+        <div class="feature-item"><span class="fi">🍪</span> Lê auth_token + ct0</div>
+        <div class="feature-item"><span class="fi">🤫</span> Funciona calada</div>
+        <div class="feature-item"><span class="fi">📱</span> Firefox Android OK</div>
+        <div class="feature-item"><span class="fi">🔒</span> Tudo no seu PC</div>
+        <div class="feature-item"><span class="fi">⚡</span> Um clique só</div>
+        <div class="feature-item"><span class="fi">🔓</span> Código aberto</div>
       </div>
     </div>
 
-    <div class="card">
+    <div class="info-card">
       <h2>🔒 Privacidade</h2>
-      <p style="color:#6a5080;font-size:0.85rem;line-height:1.6">
-        A extensão <strong>não envia</strong> seus cookies pra lugar nenhum.
-        Eles são lidos da sua sessão do X.com e escritos no <strong>localStorage</strong>
-        do X LARP dentro do seu navegador.
+      <p>
+        A extensão <strong>lê</strong> os cookies da sua sessão do <strong>x.com</strong>
+        e <strong>escreve</strong> no localStorage do X LARP.
         <br><br>
-        Código-fonte aberto em:
-        <a href="https://github.com/MCookinho/x-larp/tree/main/browser-extension" target="_blank" style="color:#b388ff">
+        Nada sai do seu navegador. Os cookies <strong>não são enviados</strong>
+        pra servidor nenhum — vão direto pro proxy Vercel que já usamos.
+        <br><br>
+        🔓 Código-fonte:
+        <a href="https://github.com/MCookinho/x-larp/tree/main/browser-extension" target="_blank">
           github.com/MCookinho/x-larp
         </a>
       </p>
     </div>
+  </section>
 
-    <a class="back" href="..">← Voltar ao X LARP</a>
+  <div class="back-section anim-in anim-in-d4">
+    <a class="back-link" href="..">← Voltar ao X LARP</a>
+  </div>
+
+  <div class="footer">
+    Feito com 💜 por MCookinho · Nenhum cookie é armazenado em servidores
   </div>
 
   <script>
-    document.querySelectorAll('.browser-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.browser-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    // Detect browser
+    const ua = navigator.userAgent.toLowerCase();
+    const isFirefox = ua.includes('firefox') || ua.includes('gecko');
+    const isAndroid = ua.includes('android');
+    const isChrome = ua.includes('chrome') || ua.includes('chromium') || ua.includes('edge') || ua.includes('brave') || ua.includes('opera');
+    const isEdge = ua.includes('edg');
+    const isBrave = ua.includes('brave');
+
+    const tabs = document.querySelectorAll('.browser-tab');
+    const contents = {
+      chrome: document.getElementById('tab-chrome'),
+      firefox: document.getElementById('tab-firefox'),
+      android: document.getElementById('tab-android'),
+    };
+    const badge = document.getElementById('badgeContent');
+    const downloadLink = document.getElementById('downloadLink');
+    const downloadIcon = document.getElementById('downloadIcon');
+    const downloadText = document.getElementById('downloadText');
+    const browserHint = document.getElementById('browserHint');
+
+    // Determine browser for initial tab
+    let initialBrowser = 'chrome';
+    if (isAndroid) {
+      initialBrowser = 'android';
+    } else if (isFirefox) {
+      initialBrowser = 'firefox';
+    }
+
+    // Update badge
+    function updateBadge() {
+      if (isAndroid) {
+        badge.className = 'detected';
+        badge.innerHTML = '📱 Firefox Android detectado!';
+        downloadIcon.textContent = '📱';
+        downloadText.textContent = 'BAIXAR PARA ANDROID';
+        browserHint.textContent = 'Firefox Android';
+        downloadLink.href = '../larp-social.zip';
+      } else if (isFirefox) {
+        badge.className = 'detected';
+        badge.innerHTML = '🦊 Firefox detectado!';
+        downloadIcon.textContent = '🦊';
+        downloadText.textContent = 'BAIXAR .XPI';
+        browserHint.textContent = 'Firefox · arraste pro navegador';
+        downloadLink.href = '../larp-social.xpi';
+        downloadLink.download = 'larp-social.xpi';
+      } else if (isEdge) {
+        badge.className = 'detected';
+        badge.innerHTML = '🌐 Edge detectado!';
+        browserHint.textContent = 'Edge (Chromium) · Chrome · Brave';
+      } else if (isBrave) {
+        badge.className = 'detected';
+        badge.innerHTML = '🦁 Brave detectado!';
+        browserHint.textContent = 'Brave · Chrome · Edge';
+      } else if (isChrome) {
+        badge.className = 'detected';
+        badge.innerHTML = '🌐 Chrome detectado!';
+        browserHint.textContent = 'Chrome · Brave · Edge';
+      } else {
+        badge.className = 'not-detected';
+        badge.innerHTML = '🤷 Navegador não identificado — veja as abas acima';
+      }
+    }
+
+    updateBadge();
+
+    // Switch to detected browser tab
+    function activateTab(browser) {
+      tabs.forEach(t => t.classList.remove('active'));
+      Object.values(contents).forEach(c => c.classList.remove('active'));
+      const tab = document.querySelector(`.browser-tab[data-browser="${browser}"]`);
+      if (tab) {
         tab.classList.add('active');
-        document.getElementById('tab-' + tab.dataset.browser).classList.add('active');
+        if (contents[browser]) contents[browser].classList.add('active');
+      }
+    }
+
+    activateTab(initialBrowser);
+
+    // Tab switching
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        Object.values(contents).forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        const content = contents[tab.dataset.browser];
+        if (content) content.classList.add('active');
       });
     });
   </script>

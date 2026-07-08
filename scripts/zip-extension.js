@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync, cpSync } from 'fs';
-import { join, relative } from 'path';
+import { join } from 'path';
 import { deflateSync } from 'zlib';
 
 const extDir = 'dist/browser-extension';
@@ -28,12 +28,6 @@ function crc32(buf) {
     c = table[(c ^ buf[i]) & 0xff] ^ (c >>> 8);
   }
   return (c ^ 0xffffffff) >>> 0;
-}
-
-function dosDate(date) {
-  const d = ((date.getFullYear() - 1980) << 9) | ((date.getMonth() + 1) << 5) | date.getDate();
-  const t = (date.getHours() << 11) | (date.getMinutes() << 5) | (date.getSeconds() >>> 1);
-  return { date: d, time: t };
 }
 
 function localFileHeader(name, crc, comp, uncomp, method) {
@@ -107,9 +101,8 @@ function collectFiles(dir, base = '') {
 
 function createZip(outPath, dir) {
   const entries = collectFiles(dir);
-  const localHeaders = [];
-  const fileDatas = [];
-  let offset = 0;
+  const centralDirEntries = [];
+  let currentOffset = 0;
 
   for (const entry of entries) {
     const data = readFileSync(entry.path);
@@ -119,40 +112,9 @@ function createZip(outPath, dir) {
     const comp = method === 8 ? compressed : data;
     const compLen = comp.length;
 
-    const header = localFileHeader(entry.name, crc, compLen, data.length, method);
-    localHeaders.push(header);
-    fileDatas.push(comp);
-    offset += header.length + compLen;
-  }
+    const localHdr = localFileHeader(entry.name, crc, compLen, data.length, method);
+    const centralHdr = centralDirHeader(entry.name, crc, compLen, data.length, method, currentOffset);
 
-  let centralOffset = 0;
-  for (const h of localHeaders) centralOffset += h.length;
-  for (const d of fileDatas) centralOffset += d.length;
-  centralOffset -= offset;
-  centralOffset = 0;
-  
-  for (const h of localHeaders) {
-    centralOffset += h.length;
-  }
-  for (const d of fileDatas) {
-    centralOffset += d.length;
-  }
-  
-  // Recalculate from beginning
-  const centralDirEntries = [];
-  let currentOffset = 0;
-  
-  for (let i = 0; i < entries.length; i++) {
-    const data = readFileSync(entries[i].path);
-    const compressed = deflateSync(data);
-    const crc = crc32(data);
-    const method = compressed.length < data.length ? 8 : 0;
-    const comp = method === 8 ? compressed : data;
-    const compLen = comp.length;
-
-    const localHdr = localFileHeader(entries[i].name, crc, compLen, data.length, method);
-    const centralHdr = centralDirHeader(entries[i].name, crc, compLen, data.length, method, currentOffset);
-    
     centralDirEntries.push({ localHdr, data: comp, centralHdr });
     currentOffset += localHdr.length + compLen;
   }
@@ -175,4 +137,5 @@ function createZip(outPath, dir) {
 }
 
 createZip('dist/larp-social.zip', extDir);
-console.log('✅ Extensão zipada: dist/larp-social.zip');
+cpSync('dist/larp-social.zip', 'dist/larp-social.xpi');
+console.log('✅ Extensão zipada: dist/larp-social.zip + .xpi');
