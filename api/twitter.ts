@@ -87,14 +87,7 @@ function buildQueryParams(variables: Record<string, unknown>): URLSearchParams {
     variables: JSON.stringify(variables),
     features: JSON.stringify(FEATURES),
   });
-  // Only include truthy fieldToggles
-  const ft: Record<string, boolean> = {};
-  for (const [k, v] of Object.entries(FIELD_TOGGLES)) {
-    if (v) ft[k] = v;
-  }
-  if (Object.keys(ft).length > 0) {
-    p.set('fieldToggles', JSON.stringify(ft));
-  }
+  p.set('fieldToggles', JSON.stringify(FIELD_TOGGLES));
   return p;
 }
 
