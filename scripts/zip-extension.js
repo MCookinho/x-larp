@@ -28,15 +28,23 @@ function crc32(buf) {
   return (c ^ 0xffffffff) >>> 0;
 }
 
+function msDosTime() {
+  const d = new Date();
+  const time = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1);
+  const date = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+  return { time, date };
+}
+
 function localFileHeader(name, crc, comp, uncomp, method) {
   const nameBuf = Buffer.from(name);
   const buf = Buffer.alloc(30 + nameBuf.length);
+  const { time, date } = msDosTime();
   buf.writeUInt32LE(0x04034b50, 0);
   buf.writeUInt16LE(20, 4);
   buf.writeUInt16LE(0, 6);
   buf.writeUInt16LE(method, 8);
-  buf.writeUInt16LE(0, 10);
-  buf.writeUInt16LE(0, 12);
+  buf.writeUInt16LE(time, 10);
+  buf.writeUInt16LE(date, 12);
   buf.writeUInt32LE(crc, 14);
   buf.writeUInt32LE(comp, 18);
   buf.writeUInt32LE(uncomp, 22);
@@ -49,13 +57,14 @@ function localFileHeader(name, crc, comp, uncomp, method) {
 function centralDirHeader(name, crc, comp, uncomp, method, offset) {
   const nameBuf = Buffer.from(name);
   const buf = Buffer.alloc(46 + nameBuf.length);
+  const { time, date } = msDosTime();
   buf.writeUInt32LE(0x02014b50, 0);
   buf.writeUInt16LE(20, 4);
   buf.writeUInt16LE(20, 6);
   buf.writeUInt16LE(0, 8);
   buf.writeUInt16LE(method, 10);
-  buf.writeUInt16LE(0, 12);
-  buf.writeUInt16LE(0, 14);
+  buf.writeUInt16LE(time, 12);
+  buf.writeUInt16LE(date, 14);
   buf.writeUInt32LE(crc, 16);
   buf.writeUInt32LE(comp, 20);
   buf.writeUInt32LE(uncomp, 24);
