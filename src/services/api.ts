@@ -1,4 +1,4 @@
-const DEFAULT_PROXY = 'https://x-larp-api-only.vercel.app/api/twitter';
+const DEFAULT_PROXY = 'https://x-larp-proxy.endurable-agreement.workers.dev';
 const PROXY_KEY = 'xlarp_proxy_url';
 const AUTH_TOKEN_KEY = 'xlarp_auth_token';
 const CSRF_TOKEN_KEY = 'xlarp_csrf_token';
