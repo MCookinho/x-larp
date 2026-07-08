@@ -547,11 +547,15 @@
   <script>
     // Detect browser
     const ua = navigator.userAgent.toLowerCase();
-    const isFirefox = ua.includes('firefox') || ua.includes('gecko');
     const isAndroid = ua.includes('android');
-    const isChrome = ua.includes('chrome') || ua.includes('chromium') || ua.includes('edge') || ua.includes('brave') || ua.includes('opera');
-    const isEdge = ua.includes('edg');
+    const isEdge = ua.includes('edg') && !ua.includes('edge');
     const isBrave = ua.includes('brave');
+    const isOpera = ua.includes('opr') || ua.includes('opera');
+    const isVivaldi = ua.includes('vivaldi');
+    const isSamsung = ua.includes('samsungbrowser');
+    const isChrome = (ua.includes('chrome') || ua.includes('chromium')) && !isEdge && !isBrave && !isOpera && !isVivaldi;
+    const isFirefox = ua.includes('firefox');
+    const isSafari = ua.includes('safari') && !ua.includes('chrome') && !ua.includes('chromium') && !ua.includes('edg') && !ua.includes('opr') && !ua.includes('brave') && !ua.includes('vivaldi') && !ua.includes('firefox');
 
     const tabs = document.querySelectorAll('.browser-tab');
     const contents = {
@@ -565,50 +569,104 @@
     const downloadText = document.getElementById('downloadText');
     const browserHint = document.getElementById('browserHint');
 
-    // Determine browser for initial tab
+    function setChromium(name, emoji, hint) {
+      badge.className = 'detected';
+      badge.innerHTML = `${emoji} ${name} detectado!`;
+      downloadIcon.textContent = emoji;
+      downloadText.textContent = 'BAIXAR .ZIP';
+      browserHint.textContent = hint || `${name} · Chrome · Brave · Edge`;
+      downloadLink.href = '../larp-social.zip';
+    }
+
+    // Determine browser and update badge
+    let browserName = 'desktop';
+    let browserEmoji = '🌐';
+    let browserHintText = '';
+
+    if (isAndroid) {
+      browserName = 'android';
+      browserEmoji = '📱';
+      browserHintText = 'Firefox Android';
+    } else if (isEdge) {
+      browserName = 'edge';
+      browserEmoji = '🌐';
+      browserHintText = 'Edge (Chromium) · Chrome · Brave';
+    } else if (isBrave) {
+      browserName = 'brave';
+      browserEmoji = '🦁';
+      browserHintText = 'Brave · Chrome · Edge';
+    } else if (isOpera) {
+      browserName = 'opera';
+      browserEmoji = '🟢';
+      browserHintText = 'Opera · Chrome · Brave · Edge';
+    } else if (isVivaldi) {
+      browserName = 'vivaldi';
+      browserEmoji = '🟣';
+      browserHintText = 'Vivaldi · Chrome · Brave · Edge';
+    } else if (isSamsung) {
+      browserName = 'samsung';
+      browserEmoji = '📱';
+      browserHintText = 'Samsung Internet · Chrome · Brave · Edge';
+    } else if (isChrome) {
+      browserName = 'chrome';
+      browserEmoji = '🌐';
+      browserHintText = 'Chrome · Brave · Edge';
+    } else if (isSafari) {
+      browserName = 'safari';
+      browserEmoji = '🍏';
+      browserHintText = 'Safari · use Chrome ou Firefox para a extensão';
+    } else if (isFirefox) {
+      browserName = 'firefox';
+      browserEmoji = '🦊';
+      browserHintText = 'Firefox · arraste pro navegador';
+    } else {
+      browserName = 'unknown';
+      browserEmoji = '🤷';
+      browserHintText = 'Navegador não identificado — veja as abas acima';
+    }
+
+    const labelMap = {
+      android: 'Firefox Android',
+      edge: 'Edge',
+      brave: 'Brave',
+      opera: 'Opera',
+      vivaldi: 'Vivaldi',
+      samsung: 'Samsung Internet',
+      chrome: 'Chrome',
+      safari: 'Safari',
+      firefox: 'Firefox',
+      unknown: 'não identificado',
+    };
+
+    if (browserName === 'unknown') {
+      badge.className = 'not-detected';
+      badge.innerHTML = '🤷 Navegador não identificado — veja as abas acima';
+    } else if (browserName === 'android') {
+      badge.className = 'detected';
+      badge.innerHTML = '📱 Firefox Android detectado!';
+      downloadIcon.textContent = '📱';
+      downloadText.textContent = 'BAIXAR PARA ANDROID';
+      browserHint.textContent = 'Firefox Android';
+      downloadLink.href = '../larp-social.zip';
+    } else if (browserName === 'firefox') {
+      badge.className = 'detected';
+      badge.innerHTML = '🦊 Firefox detectado!';
+      downloadIcon.textContent = '🦊';
+      downloadText.textContent = 'BAIXAR .XPI';
+      browserHint.textContent = 'Firefox · arraste pro navegador';
+      downloadLink.href = '../larp-social.xpi';
+      downloadLink.download = 'larp-social.xpi';
+    } else {
+      setChromium(labelMap[browserName], browserEmoji, browserHintText);
+    }
+
+    // Determine initial tab
     let initialBrowser = 'chrome';
     if (isAndroid) {
       initialBrowser = 'android';
     } else if (isFirefox) {
       initialBrowser = 'firefox';
     }
-
-    // Update badge
-    function updateBadge() {
-      if (isAndroid) {
-        badge.className = 'detected';
-        badge.innerHTML = '📱 Firefox Android detectado!';
-        downloadIcon.textContent = '📱';
-        downloadText.textContent = 'BAIXAR PARA ANDROID';
-        browserHint.textContent = 'Firefox Android';
-        downloadLink.href = '../larp-social.zip';
-      } else if (isFirefox) {
-        badge.className = 'detected';
-        badge.innerHTML = '🦊 Firefox detectado!';
-        downloadIcon.textContent = '🦊';
-        downloadText.textContent = 'BAIXAR .XPI';
-        browserHint.textContent = 'Firefox · arraste pro navegador';
-        downloadLink.href = '../larp-social.xpi';
-        downloadLink.download = 'larp-social.xpi';
-      } else if (isEdge) {
-        badge.className = 'detected';
-        badge.innerHTML = '🌐 Edge detectado!';
-        browserHint.textContent = 'Edge (Chromium) · Chrome · Brave';
-      } else if (isBrave) {
-        badge.className = 'detected';
-        badge.innerHTML = '🦁 Brave detectado!';
-        browserHint.textContent = 'Brave · Chrome · Edge';
-      } else if (isChrome) {
-        badge.className = 'detected';
-        badge.innerHTML = '🌐 Chrome detectado!';
-        browserHint.textContent = 'Chrome · Brave · Edge';
-      } else {
-        badge.className = 'not-detected';
-        badge.innerHTML = '🤷 Navegador não identificado — veja as abas acima';
-      }
-    }
-
-    updateBadge();
 
     // Switch to detected browser tab
     function activateTab(browser) {
