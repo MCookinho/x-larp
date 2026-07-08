@@ -103,8 +103,11 @@ async function graphqlGetAuth(
   authToken: string,
   csrfToken: string,
 ): Promise<any> {
-  const res = await fetch(url, {
-    method: 'POST',
+  const params = new URLSearchParams({
+    variables: JSON.stringify(variables),
+    features: JSON.stringify(FEATURES),
+  });
+  const res = await fetch(`${url}?${params}`, {
     headers: {
       Authorization: `Bearer ${BEARER_TOKEN}`,
       Cookie: `auth_token=${authToken}; ct0=${csrfToken}`,
@@ -113,12 +116,8 @@ async function graphqlGetAuth(
       'User-Agent': UA,
       Origin: 'https://x.com',
       Referer: 'https://x.com/',
-      'Content-Type': 'application/json',
+      Accept: 'application/json',
     },
-    body: JSON.stringify({
-      variables,
-      features: FEATURES,
-    }),
   });
   if (!res.ok) {
     const text = await res.text().catch(() => '');
@@ -336,10 +335,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const result = isAuth
           ? await graphqlGetAuth(url, variables, authToken!, csrfToken!)
           : await graphqlGet(url, variables, guestToken);
-
-        if (req.query._raw === '1') {
-          return res.json({ result, variables: vars, url });
-        }
 
         const tweets = extractTweets(result);
         const nextCursor = extractCursor(result);
