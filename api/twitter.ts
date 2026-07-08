@@ -342,6 +342,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const tweets = extractTweets(result);
         const nextCursor = extractCursor(result);
 
+        // If no tweets, debug the response
+        if (tweets.length === 0) {
+          return res.json({ tweets, nextCursor, debug: { instructions: result?.data?.user?.result?.timeline?.timeline?.instructions?.map((i: any) => i.type) } });
+        }
+
         return res.json({ tweets, nextCursor });
       }
 
