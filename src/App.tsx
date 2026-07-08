@@ -153,25 +153,6 @@ export default function App() {
               Cansou de fingir que sua timeline faz sentido? Coloca seu @ aí em cima
               e descobre qual personagem você tá interpretando no X.
             </p>
-            {!hasAuth && (
-              <div className="welcome-mock-notice">
-                <p>
-                  🎭 <strong>Modo zoeira ativado!</strong> Dados fictícios (ou guest mode).
-                  {' '}
-                  <button className="link-btn" onClick={() => setSettingsOpen(true)}>
-                    Colar cookies
-                  </button>
-                  {' '}pra buscar dados reais com paginação completa.
-                </p>
-                <p style={{ marginTop: 8 }}>
-                  📦 Ou instale a extensão{' '}
-                  <a className="link-btn" href={`${import.meta.env.BASE_URL}browser-extension/`} target="_blank">
-                    Larp Social
-                  </a>
-                  {' '}— um clique e os cookies vão pro lugar certo!
-                </p>
-              </div>
-            )}
             {hasRealData && (
               <div className="welcome-mock-notice" style={{ borderColor: 'var(--green)', color: 'var(--green)' }}>
                 ✅ Dados reais de @{realUser!.username} carregados!

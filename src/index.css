@@ -1065,33 +1065,103 @@ body {
   flex-wrap: wrap;
 }
 
-.header-settings-btn {
-  padding: 8px 16px;
+.connect-wrapper {
+  position: relative;
+}
+
+.connect-btn {
+  padding: 8px 18px;
   background: rgba(0, 0, 0, 0.2);
   border: 2px solid var(--border-strong);
   border-radius: 20px;
   color: var(--text-secondary);
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-family: var(--font-heading);
   font-weight: 600;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.header-settings-btn:hover {
+.connect-btn:hover {
   border-color: var(--purple);
   color: var(--purple);
   background: rgba(179, 136, 255, 0.08);
 }
 
-.header-api-status {
-  font-size: 0.78rem;
+.connect-btn.connected {
+  border-color: var(--green);
   color: var(--green);
-  font-family: var(--font-hand);
 }
 
-.header-api-status.mock {
+.connect-badge {
+  font-size: 0.7rem;
+}
+
+.connect-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 240px;
+  background: linear-gradient(135deg, #1e1230, #2a1a40);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  overflow: hidden;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.connect-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--text);
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.connect-option:hover {
+  background: rgba(179, 136, 255, 0.1);
+}
+
+.connect-option:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.connect-option-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.connect-option strong {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.connect-option small {
+  display: block;
+  font-size: 0.72rem;
   color: var(--text-muted);
+  font-family: var(--font-body);
+  font-weight: 400;
+  margin-top: 2px;
 }
 
 /* === ERROR BANNER === */

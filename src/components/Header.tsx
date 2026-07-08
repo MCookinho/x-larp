@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { isConfigured } from '../services/api';
+import { useState, useRef, useEffect } from 'react';
+import { getAuthToken, getCsrfToken } from '../services/api';
 
 interface HeaderProps {
   onAnalyze: (username: string) => void;
@@ -9,7 +9,20 @@ interface HeaderProps {
 
 export function Header({ onAnalyze, isLoading, onOpenSettings }: HeaderProps) {
   const [input, setInput] = useState('');
-  const configured = isConfigured();
+  const [showConnect, setShowConnect] = useState(false);
+  const connectRef = useRef<HTMLDivElement>(null);
+
+  const hasAuth = !!(getAuthToken() && getCsrfToken());
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (connectRef.current && !connectRef.current.contains(e.target as Node)) {
+        setShowConnect(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,15 +59,42 @@ export function Header({ onAnalyze, isLoading, onOpenSettings }: HeaderProps) {
       </form>
 
       <div className="header-actions">
-        <button className="header-settings-btn" onClick={onOpenSettings}>
-          ⚙️ Proxy {configured ? '✅' : ''}
-        </button>
-        {configured && (
-          <span className="header-api-status">🔌 Proxy ativo — dados reais</span>
-        )}
-        {!configured && (
-          <span className="header-api-status mock">🎭 Modo zoeira (dados fictícios)</span>
-        )}
+        <div className="connect-wrapper" ref={connectRef}>
+          <button
+            className={`connect-btn ${hasAuth ? 'connected' : ''}`}
+            onClick={() => setShowConnect(!showConnect)}
+          >
+            ⚙️ Conectar
+            {hasAuth && <span className="connect-badge">🔑</span>}
+          </button>
+
+          {showConnect && (
+            <div className="connect-dropdown">
+              <a
+                className="connect-option"
+                href={`${import.meta.env.BASE_URL}browser-extension/`}
+                target="_blank"
+                onClick={() => setShowConnect(false)}
+              >
+                <span className="connect-option-icon">🎭</span>
+                <div>
+                  <strong>Instalar Extensão</strong>
+                  <small>Detecta cookies automaticamente</small>
+                </div>
+              </a>
+              <button
+                className="connect-option"
+                onClick={() => { setShowConnect(false); onOpenSettings(); }}
+              >
+                <span className="connect-option-icon">🔑</span>
+                <div>
+                  <strong>Colar Cookies</strong>
+                  <small>auth_token + ct0 manualmente</small>
+                </div>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="header-disclaimer">
