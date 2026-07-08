@@ -267,6 +267,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.json({ tweets, nextCursor });
       }
 
+      case 'debug': {
+        const screenName = req.query.username as string;
+        const url = graphqlUrl(base, HASHES.UserTweets, 'UserTweets');
+        const variables: Record<string, unknown> = {
+          userId: '',
+          screenName,
+          count: 5,
+          includePromotedContent: false,
+          withQuickPromoteEligibilityTweetFields: true,
+          withVoice: true,
+          withV2Timeline: true,
+          __relay_internal__pv__appviewerisloggedinprovider: false,
+        };
+        const result = isAuth
+          ? await graphqlGetAuth(url, variables, authToken!, csrfToken!)
+          : await graphqlGet(url, variables, guestToken);
+        return res.json(result);
+      }
+
       default:
         return res.status(400).json({ error: 'unknown action' });
     }
