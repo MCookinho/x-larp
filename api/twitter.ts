@@ -71,24 +71,11 @@ function graphqlUrl(_base: string, hash: string, name: string) {
   return `https://x.com/i/api/graphql/${hash}/${name}`;
 }
 
-const FIELD_TOGGLES = {
-  withPayments: true,
-  withAuxiliaryUserLabels: true,
-  withArticleRichContentState: false,
-  withArticlePlainText: false,
-  withArticleSummaryText: false,
-  withArticleVoiceOver: false,
-  withGrokAnalyze: false,
-  withDisallowedReplyControls: false,
-};
-
 function buildQueryParams(variables: Record<string, unknown>): URLSearchParams {
-  const p = new URLSearchParams({
+  return new URLSearchParams({
     variables: JSON.stringify(variables),
     features: JSON.stringify(FEATURES),
   });
-  p.set('fieldToggles', JSON.stringify(FIELD_TOGGLES));
-  return p;
 }
 
 async function graphqlGet(
@@ -355,11 +342,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         const tweets = extractTweets(result);
         const nextCursor = extractCursor(result);
-
-        // If no tweets, debug the response
-        if (tweets.length === 0) {
-          return res.json({ tweets, nextCursor, debug: { instructions: result?.data?.user?.result?.timeline?.timeline?.instructions?.map((i: any) => i.type) } });
-        }
 
         return res.json({ tweets, nextCursor });
       }
