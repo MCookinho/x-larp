@@ -75,6 +75,21 @@ export default function App() {
   };
 
   useEffect(() => {
+    function onMessage(event: MessageEvent) {
+      if (event.data?.source === 'larp-social-extension' && event.data?.action === 'set-cookies') {
+        const { authToken, ct0 } = event.data;
+        localStorage.setItem('xlarp_auth_token', authToken);
+        localStorage.setItem('xlarp_csrf_token', ct0);
+        setExtensionDetected(true);
+        const lastUser = localStorage.getItem('xlarp_last_user');
+        if (!autoFetched.current && lastUser) {
+          autoFetched.current = true;
+          handleAnalyze(lastUser);
+        }
+      }
+    }
+    window.addEventListener('message', onMessage);
+
     if (getAuthToken() && getCsrfToken()) {
       setExtensionDetected(true);
       const lastUser = localStorage.getItem('xlarp_last_user');
@@ -83,16 +98,8 @@ export default function App() {
         handleAnalyze(lastUser);
       }
     }
-    function onExtensionLoaded() {
-      setExtensionDetected(true);
-      const lastUser = localStorage.getItem('xlarp_last_user');
-      if (!autoFetched.current && lastUser) {
-        autoFetched.current = true;
-        handleAnalyze(lastUser);
-      }
-    }
-    window.addEventListener('larp-social-loaded', onExtensionLoaded as EventListener);
-    return () => window.removeEventListener('larp-social-loaded', onExtensionLoaded as EventListener);
+
+    return () => window.removeEventListener('message', onMessage);
   }, []);
 
   useEffect(() => {

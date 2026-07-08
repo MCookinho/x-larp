@@ -41,19 +41,12 @@
     setTimeout(() => dismiss(toast), 6000);
     document.body.appendChild(toast);
 
-    const script = document.createElement('script');
-    script.textContent = `
-      (function() {
-        if (localStorage.getItem('xlarp_auth_token')) return;
-        localStorage.setItem('xlarp_auth_token', ${JSON.stringify(authToken)});
-        localStorage.setItem('xlarp_csrf_token', ${JSON.stringify(ct0)});
-        window.dispatchEvent(new CustomEvent('larp-social-loaded', {
-          detail: { authToken: ${JSON.stringify(authToken)}, ct0: ${JSON.stringify(ct0)} }
-        }));
-      })();
-    `;
-    document.documentElement.appendChild(script);
-    script.remove();
+    window.postMessage({
+      source: 'larp-social-extension',
+      action: 'set-cookies',
+      authToken,
+      ct0,
+    }, window.location.origin);
   }
 
   function dismiss(toast) {

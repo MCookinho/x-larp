@@ -67,7 +67,7 @@ async function getGuestToken(): Promise<{ token: string; base: string }> {
 }
 
 function graphqlUrl(_base: string, hash: string, name: string) {
-  return `https://twitter.com/i/api/graphql/${hash}/${name}`;
+  return `https://x.com/i/api/graphql/${hash}/${name}`;
 }
 
 async function graphqlGet(
@@ -85,8 +85,8 @@ async function graphqlGet(
       'x-guest-token': guestToken,
       'x-twitter-active-user': 'yes',
       'User-Agent': UA,
-      Origin: 'https://twitter.com',
-      Referer: 'https://twitter.com/',
+      Origin: 'https://x.com',
+      Referer: 'https://x.com/',
       Accept: 'application/json',
     },
   });
@@ -114,8 +114,8 @@ async function graphqlGetAuth(
       'x-csrf-token': csrfToken,
       'x-twitter-active-user': 'yes',
       'User-Agent': UA,
-      Origin: 'https://twitter.com',
-      Referer: 'https://twitter.com/',
+      Origin: 'https://x.com',
+      Referer: 'https://x.com/',
       Accept: 'application/json',
     },
   });
@@ -335,10 +335,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const result = isAuth
           ? await graphqlGetAuth(url, variables, authToken!, csrfToken!)
           : await graphqlGet(url, variables, guestToken);
-
-        if (req.query.debug === '1') {
-          return res.json(result);
-        }
 
         const tweets = extractTweets(result);
         const nextCursor = extractCursor(result);
