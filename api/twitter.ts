@@ -276,7 +276,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const tweets = extractTweets(result);
         const nextCursor = extractCursor(result);
 
-        return res.json({ tweets, nextCursor });
+        return res.json({ tweets, nextCursor, _debugInstructions: timelineInstructions(result).map((i: any) => i.__typename) });
       }
 
       default:
