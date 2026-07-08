@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { getAuthToken, getCsrfToken } from '../services/api';
+import { ConnectModal } from './ConnectModal';
 
 interface HeaderProps {
   onAnalyze: (username: string) => void;
@@ -7,22 +8,11 @@ interface HeaderProps {
   onOpenSettings: () => void;
 }
 
-export function Header({ onAnalyze, isLoading, onOpenSettings }: HeaderProps) {
+export function Header({ onAnalyze, isLoading, onOpenSettings: _onOpenSettings }: HeaderProps) {
   const [input, setInput] = useState('');
-  const [showConnect, setShowConnect] = useState(false);
-  const connectRef = useRef<HTMLDivElement>(null);
+  const [connectOpen, setConnectOpen] = useState(false);
 
   const hasAuth = !!(getAuthToken() && getCsrfToken());
-
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (connectRef.current && !connectRef.current.contains(e.target as Node)) {
-        setShowConnect(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,6 +21,12 @@ export function Header({ onAnalyze, isLoading, onOpenSettings }: HeaderProps) {
 
   return (
     <header className="header">
+      <ConnectModal
+        isOpen={connectOpen}
+        onClose={() => setConnectOpen(false)}
+        onConfigChange={() => {}}
+      />
+
       <div className="header-top">
         <h1 className="title">
           <span className="title-icon">🐦</span>
@@ -59,42 +55,13 @@ export function Header({ onAnalyze, isLoading, onOpenSettings }: HeaderProps) {
       </form>
 
       <div className="header-actions">
-        <div className="connect-wrapper" ref={connectRef}>
-          <button
-            className={`connect-btn ${hasAuth ? 'connected' : ''}`}
-            onClick={() => setShowConnect(!showConnect)}
-          >
-            ⚙️ Conectar
-            {hasAuth && <span className="connect-badge">🔑</span>}
-          </button>
-
-          {showConnect && (
-            <div className="connect-dropdown">
-              <a
-                className="connect-option"
-                href={`${import.meta.env.BASE_URL}browser-extension/`}
-                target="_blank"
-                onClick={() => setShowConnect(false)}
-              >
-                <span className="connect-option-icon">🎭</span>
-                <div>
-                  <strong>Instalar Extensão</strong>
-                  <small>Detecta cookies automaticamente</small>
-                </div>
-              </a>
-              <button
-                className="connect-option"
-                onClick={() => { setShowConnect(false); onOpenSettings(); }}
-              >
-                <span className="connect-option-icon">🔑</span>
-                <div>
-                  <strong>Colar Cookies</strong>
-                  <small>auth_token + ct0 manualmente</small>
-                </div>
-              </button>
-            </div>
-          )}
-        </div>
+        <button
+          className={`connect-btn ${hasAuth ? 'connected' : ''}`}
+          onClick={() => setConnectOpen(true)}
+        >
+          ⚙️ Conectar
+          {hasAuth && <span className="connect-badge">🔑</span>}
+        </button>
       </div>
 
       <div className="header-disclaimer">

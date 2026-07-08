@@ -1435,6 +1435,160 @@ body {
   color: var(--green);
 }
 
+/* === CONNECT MODAL === */
+
+.connect-modal {
+  max-width: 680px !important;
+}
+
+.connect-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.connect-header-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.connect-cards {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  margin-bottom: 16px;
+}
+
+.connect-card {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.15);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.connect-card-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.connect-card-title {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.connect-card-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.connect-card-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.connect-card-features li {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+}
+
+.connect-card-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border: 3px solid var(--purple);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--purple), #9c6eff);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.15s;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.4);
+  margin-top: auto;
+}
+
+.connect-card-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.5);
+  filter: brightness(1.1);
+}
+
+.connect-card-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+.connect-card-btn.secondary {
+  background: transparent;
+  border-color: var(--yellow);
+  color: var(--yellow);
+  box-shadow: none;
+}
+
+.connect-card-btn.secondary:hover {
+  background: rgba(255, 192, 72, 0.1);
+  filter: brightness(1.1);
+  transform: none;
+  box-shadow: none;
+}
+
+.connect-divider {
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  padding: 0 4px;
+}
+
+.connect-divider span {
+  writing-mode: vertical-lr;
+  text-orientation: mixed;
+  letter-spacing: 4px;
+}
+
+.connect-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.connect-form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+@media (max-width: 600px) {
+  .connect-cards {
+    flex-direction: column;
+  }
+  .connect-divider {
+    padding: 4px 0;
+  }
+  .connect-divider span {
+    writing-mode: horizontal-tb;
+  }
+}
+
 .settings-footer {
   margin-top: 16px;
   font-size: 0.75rem;
