@@ -159,25 +159,25 @@ function extractTweets(data: any): any[] {
         entry?.content?.content?.tweet_results?.result ??
         entry?.content?.itemContent?.tweet_results?.result;
       if (!tweetResult || tweetResult.__typename !== 'Tweet') continue;
-      const details = tweetResult.details ?? {};
-      const counts = tweetResult.counts ?? {};
-      const mentionEntities: any[] = tweetResult.mention_entities ?? [];
+      const legacy = tweetResult.legacy ?? {};
+      const core = tweetResult.core ?? {};
+      const userMentions: any[] = legacy.entities?.user_mentions ?? [];
       const viewsCount = tweetResult.views?.count;
       tweets.push({
         id: tweetResult.rest_id ?? '',
-        text: details.full_text ?? '',
-        likes: counts.favorite_count ?? 0,
-        retweets: counts.retweet_count ?? 0,
-        replies: counts.reply_count ?? 0,
-        quotes: counts.quote_count ?? 0,
+        text: legacy.full_text ?? '',
+        likes: legacy.favorite_count ?? 0,
+        retweets: legacy.retweet_count ?? 0,
+        replies: legacy.reply_count ?? 0,
+        quotes: legacy.quote_count ?? 0,
         views: viewsCount ? Number(viewsCount) : 0,
-        bookmarks: counts.bookmark_count ?? 0,
-        mentions: mentionEntities.map((m: any) => ({
+        bookmarks: legacy.bookmark_count ?? 0,
+        mentions: userMentions.map((m: any) => ({
           username: m.screen_name ?? '',
-          name: m.screen_name ?? '',
+          name: m.name ?? '',
           id: m.id_str ?? '',
         })),
-        createdAt: details.created_at_ms ? new Date(details.created_at_ms).toISOString() : '',
+        createdAt: legacy.created_at ?? '',
       });
     }
   }
@@ -352,24 +352,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         const tweets = extractTweets(result);
         const nextCursor = extractCursor(result);
-
-        if (tweets.length > 0) {
-          const firstEntry = result?.data?.user?.result?.timeline?.timeline?.instructions
-            ?.find((i: any) => (i.__typename ?? i.type) === 'TimelineAddEntries')
-            ?.entries?.[0];
-          const tr = firstEntry?.content?.content?.tweet_results?.result ?? firstEntry?.content?.itemContent?.tweet_results?.result;
-          return res.json({
-            tweets,
-            nextCursor,
-            _debug: {
-              topKeys: tr ? Object.keys(tr) : null,
-              hasLegacy: !!tr?.legacy,
-              legacyKeys: tr?.legacy ? Object.keys(tr.legacy) : null,
-              hasCore: !!tr?.core,
-              hasViews: !!tr?.views,
-            },
-          });
-        }
 
         return res.json({ tweets, nextCursor });
       }
