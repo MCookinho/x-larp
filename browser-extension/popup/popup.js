@@ -18,8 +18,8 @@ async function checkCookies() {
 
     if (chrome.runtime.lastError || !response) {
       missingEl.style.display = 'flex';
-      missingEl.querySelector('small')!.innerHTML =
-        'Não foi possível contactar a extensão.';
+      const small = missingEl.querySelector('small');
+      if (small) small.innerHTML = 'Não foi possível contactar a extensão.';
       return;
     }
 
