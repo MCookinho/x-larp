@@ -353,6 +353,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const tweets = extractTweets(result);
         const nextCursor = extractCursor(result);
 
+        if (tweets.length > 0) {
+          const firstEntry = result?.data?.user?.result?.timeline?.timeline?.instructions
+            ?.find((i: any) => (i.__typename ?? i.type) === 'TimelineAddEntries')
+            ?.entries?.[0];
+          const tr = firstEntry?.content?.content?.tweet_results?.result ?? firstEntry?.content?.itemContent?.tweet_results?.result;
+          return res.json({
+            tweets,
+            nextCursor,
+            _debug: {
+              topKeys: tr ? Object.keys(tr) : null,
+              hasLegacy: !!tr?.legacy,
+              legacyKeys: tr?.legacy ? Object.keys(tr.legacy) : null,
+              hasCore: !!tr?.core,
+              hasViews: !!tr?.views,
+            },
+          });
+        }
+
         return res.json({ tweets, nextCursor });
       }
 
