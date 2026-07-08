@@ -348,7 +348,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           tweets,
           nextCursor,
           _debug: {
-            instTypes: instructions.map((i: any) => i.__typename ?? i.type ?? '?'),
+            instTypes: instructions.map((i: any) => ({ typename: i.__typename, type: i.type })),
             hasResult: !!result?.data?.user?.result,
             hasTimeline: !!result?.data?.user?.result?.timeline,
             uid,
