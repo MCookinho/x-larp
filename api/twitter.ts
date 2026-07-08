@@ -141,13 +141,23 @@ function timelineInstructions(data: any): any[] {
   return [];
 }
 
+function instructionType(inst: any): string {
+  return inst.__typename ?? inst.type ?? '';
+}
+
+function instructionEntries(inst: any): any[] {
+  return inst.entries ?? inst.entry ?? [];
+}
+
 function extractTweets(data: any): any[] {
   const instructions = timelineInstructions(data);
   const tweets: any[] = [];
   for (const inst of instructions) {
-    if (inst.__typename !== 'TimelineAddEntries') continue;
-    for (const entry of inst.entries ?? []) {
-      const tweetResult = entry?.content?.content?.tweet_results?.result;
+    if (instructionType(inst) !== 'TimelineAddEntries') continue;
+    for (const entry of instructionEntries(inst)) {
+      const tweetResult =
+        entry?.content?.content?.tweet_results?.result ??
+        entry?.content?.itemContent?.tweet_results?.result;
       if (!tweetResult || tweetResult.__typename !== 'Tweet') continue;
       const details = tweetResult.details ?? {};
       const counts = tweetResult.counts ?? {};
@@ -177,8 +187,8 @@ function extractTweets(data: any): any[] {
 function extractCursor(data: any): string | null {
   const instructions = timelineInstructions(data);
   for (const inst of instructions) {
-    if (inst.__typename !== 'TimelineAddEntries') continue;
-    for (const entry of inst.entries ?? []) {
+    if (instructionType(inst) !== 'TimelineAddEntries') continue;
+    for (const entry of instructionEntries(inst)) {
       const eid = entry.entry_id ?? '';
       if (!eid.includes('cursor-bottom')) continue;
       const cursorContent = entry?.content?.content;
@@ -340,22 +350,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           ? await graphqlGetAuth(url, variables, authToken!, csrfToken!)
           : await graphqlGet(url, variables, guestToken);
 
-        const instructions = result?.data?.user?.result?.timeline?.timeline?.instructions ?? [];
         const tweets = extractTweets(result);
         const nextCursor = extractCursor(result);
 
-        return res.json({
-          tweets,
-          nextCursor,
-          _debug: {
-            instTypes: instructions.map((i: any) => ({ typename: i.__typename, type: i.type })),
-            hasResult: !!result?.data?.user?.result,
-            hasTimeline: !!result?.data?.user?.result?.timeline,
-            uid,
-            count: variables.count,
-            resultKeys: Object.keys(result ?? {}),
-          },
-        });
+        return res.json({ tweets, nextCursor });
       }
 
       default:
