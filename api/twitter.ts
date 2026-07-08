@@ -126,7 +126,11 @@ function userResult(data: any): any {
 
 function timelineInstructions(data: any): any[] {
   const u = userResult(data);
-  return u?.profile_timeline_v2?.timeline?.instructions ?? [];
+  return (
+    u?.timeline?.instructions ??
+    u?.profile_timeline_v2?.timeline?.instructions ??
+    []
+  );
 }
 
 function extractTweets(data: any): any[] {
@@ -278,8 +282,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         return res.json({
           tweets, nextCursor,
-          _data: Object.keys(result?.data ?? {}),
-          _keys: Object.keys(result?.data?.user?.result ?? {}).slice(0,20),
+          _timeline: result?.data?.user?.result?.timeline,
         });
       }
 
