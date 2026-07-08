@@ -214,20 +214,24 @@ function extractUserResult(data: any): any {
 }
 
 function formatUser(userResult: any) {
+  const legacy = userResult.legacy ?? {};
+  const parsedDate = userResult.core?.created_at
+    ? new Date(userResult.core.created_at).toISOString()
+    : '';
   return {
     id: userResult.rest_id ?? '',
     name: userResult.core?.name ?? '',
     username: userResult.core?.screen_name ?? '',
     description: userResult.profile_bio?.description ?? '',
     avatar: (userResult.avatar?.image_url ?? '').replace('_normal', '_400x400'),
-    banner: userResult.banner?.image_url ?? '',
-    followersCount: userResult.relationship_counts?.followers ?? 0,
-    followingCount: userResult.relationship_counts?.following ?? 0,
-    tweetCount: userResult.tweet_counts?.tweets ?? 0,
-    likesCount: 0,
-    listedCount: 0,
-    verified: !!userResult.verification?.is_blue_verified,
-    createdAt: new Date(Number(userResult.core?.created_at_ms ?? 0)).toISOString(),
+    banner: legacy.profile_banner_url ?? '',
+    followersCount: legacy.followers_count ?? 0,
+    followingCount: legacy.friends_count ?? 0,
+    tweetCount: legacy.statuses_count ?? 0,
+    likesCount: legacy.favourites_count ?? 0,
+    listedCount: legacy.listed_count ?? 0,
+    verified: !!userResult.is_blue_verified,
+    createdAt: parsedDate,
   };
 }
 
@@ -269,10 +273,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (!userResult) {
           const err = JSON.stringify(result).slice(0, 500);
           return res.status(404).json({ error: 'User not found', details: err });
-        }
-
-        if (req.query.raw === '1') {
-          return res.json(userResult);
         }
 
         return res.json(formatUser(userResult));
