@@ -102,34 +102,24 @@ async function graphqlGetAuth(
   variables: Record<string, unknown>,
   authToken: string,
   csrfToken: string,
-  usePost = false,
 ): Promise<any> {
-  const headers: Record<string, string> = {
-    Authorization: `Bearer ${BEARER_TOKEN}`,
-    Cookie: `auth_token=${authToken}; ct0=${csrfToken}`,
-    'x-csrf-token': csrfToken,
-    'x-twitter-active-user': 'yes',
-    'User-Agent': UA,
-    Origin: 'https://x.com',
-    Referer: 'https://x.com/',
-    Accept: 'application/json',
-  };
-
-  let res: Response;
-  if (usePost) {
-    res = await fetch(url, {
-      method: 'POST',
-      headers: { ...headers, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ variables, features: FEATURES }),
-    });
-  } else {
-    const params = new URLSearchParams({
-      variables: JSON.stringify(variables),
-      features: JSON.stringify(FEATURES),
-    });
-    res = await fetch(`${url}?${params}`, { headers });
-  }
-
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${BEARER_TOKEN}`,
+      Cookie: `auth_token=${authToken}; ct0=${csrfToken}`,
+      'x-csrf-token': csrfToken,
+      'x-twitter-active-user': 'yes',
+      'User-Agent': UA,
+      Origin: 'https://x.com',
+      Referer: 'https://x.com/',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      variables,
+      features: FEATURES,
+    }),
+  });
   if (!res.ok) {
     const text = await res.text().catch(() => '');
     throw new Error(`GraphQL ${res.status}: ${text.slice(0, 300)}`);
@@ -344,7 +334,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (cursor) variables.cursor = cursor;
 
         const result = isAuth
-          ? await graphqlGetAuth(url, variables, authToken!, csrfToken!, true)
+          ? await graphqlGetAuth(url, variables, authToken!, csrfToken!)
           : await graphqlGet(url, variables, guestToken);
 
         const tweets = extractTweets(result);
