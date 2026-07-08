@@ -189,11 +189,11 @@ function extractCursor(data: any): string | null {
   for (const inst of instructions) {
     if (instructionType(inst) !== 'TimelineAddEntries') continue;
     for (const entry of instructionEntries(inst)) {
-      const eid = entry.entry_id ?? '';
+      const eid = entry.entryId ?? entry.entry_id ?? '';
       if (!eid.includes('cursor-bottom')) continue;
       const cursorContent = entry?.content?.content;
-      if (cursorContent?.__typename === 'TimelineTimelineCursor') {
-        return cursorContent.cursorValue ?? null;
+      if (cursorContent && instructionType(cursorContent) === 'TimelineTimelineCursor') {
+        return cursorContent.cursorValue ?? cursorContent.value ?? null;
       }
     }
   }
@@ -352,20 +352,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         const tweets = extractTweets(result);
         const nextCursor = extractCursor(result);
-
-        if (!nextCursor && tweets.length > 0) {
-          const addEntries = result?.data?.user?.result?.timeline?.timeline?.instructions
-            ?.find((i: any) => (i.__typename ?? i.type) === 'TimelineAddEntries');
-          return res.json({
-            tweets,
-            nextCursor,
-            _debug: {
-              entryCount: addEntries?.entries?.length ?? addEntries?.entry?.length,
-              allEntryIds: (addEntries?.entries ?? addEntries?.entry ?? []).map((e: any) => e.entry_id),
-              sampleEntry: addEntries?.entries?.[0] ? Object.keys(addEntries.entries[0]) : addEntries?.entry?.[0] ? Object.keys(addEntries.entry[0]) : null,
-            },
-          });
-        }
 
         return res.json({ tweets, nextCursor });
       }
