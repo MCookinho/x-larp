@@ -6,6 +6,7 @@ const BEARER_TOKEN =
 const HASHES = {
   UserByScreenName: '2qvSHpkWTMS9i0zJAwDNiA',
   UserTweets: 'hr4gzZONlq23okjU8fIe_A',
+  UserTweetsAndReplies: 'FIFgycIi-CNJcV0R-135Uw',
 };
 
 const FEATURES: Record<string, boolean> = {
@@ -273,7 +274,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const uid = userId || extractUserResult(userResult)?.rest_id;
         if (!uid) return res.status(404).json({ error: 'User not found' });
 
-        const url = graphqlUrl(base, HASHES.UserTweets, 'UserTweets');
+        const useReplies = req.query.mode === 'replies';
+        const tweetHash = useReplies ? HASHES.UserTweetsAndReplies : HASHES.UserTweets;
+        const url = graphqlUrl(base, tweetHash, useReplies ? 'UserTweetsAndReplies' : 'UserTweets');
         const vars: Record<string, unknown> = {
           userId: uid,
           count,
