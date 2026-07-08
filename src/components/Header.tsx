@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { getAuthToken, getCsrfToken } from '../services/api';
 import { ConnectModal } from './ConnectModal';
 
@@ -14,15 +14,6 @@ export function Header({ onAnalyze, isLoading, onOpenSettings: _onOpenSettings, 
   const [connectOpen, setConnectOpen] = useState(false);
 
   const hasAuth = !!(getAuthToken() && getCsrfToken());
-
-  useEffect(() => {
-    if (extensionDetected && !input) setInput('MCookinho');
-  }, [extensionDetected]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (input.trim()) onAnalyze(input.trim());
-  };
 
   return (
     <header className="header">
@@ -43,16 +34,22 @@ export function Header({ onAnalyze, isLoading, onOpenSettings: _onOpenSettings, 
         </p>
       </div>
 
-      <form className="search-form" onSubmit={handleSubmit}>
+      <form className="search-form" onSubmit={(e) => { e.preventDefault(); onAnalyze(extensionDetected ? 'MCookinho' : input.trim()); }}>
         <div className="input-group">
-          <span className="input-prefix">@</span>
-          <input
-            type="text"
-            placeholder={extensionDetected ? 'MCookinho' : 'coloca teu @ aqui (ex: MCookinho)'}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            className="search-input"
-          />
+          {extensionDetected ? (
+            <span className="input-prefix" style={{ fontSize: '1.2em' }}>@MCookinho</span>
+          ) : (
+            <>
+              <span className="input-prefix">@</span>
+              <input
+                type="text"
+                placeholder="coloca teu @ aqui (ex: MCookinho)"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                className="search-input"
+              />
+            </>
+          )}
           <button type="submit" className="search-btn" disabled={isLoading}>
             {isLoading ? '🤔 ANALISANDO...' : '🔍 DESMASCARAR'}
           </button>
