@@ -358,20 +358,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             ?.find((i: any) => (i.__typename ?? i.type) === 'TimelineAddEntries');
           const entries = addEntries?.entries ?? addEntries?.entry ?? [];
           return res.json({
-            tweets,
+            tweets: tweets.slice(0, 2),
             nextCursor,
             _debug: {
               entryCount: entries.length,
-              entryIds: entries.map((e: any) => e.entryId ?? e.entry_id).filter(Boolean),
-              cursorEntries: entries.filter((e: any) => (e.entryId ?? e.entry_id ?? '').includes('cursor')).map((e: any) => ({
+              allEntryIds: (entries ?? []).map((e: any) => e.entryId ?? e.entry_id),
+              entryWithCursor: entries.find((e: any) => (e.entryId ?? e.entry_id ?? '').toLowerCase().includes('cursor')),
+              nonTweet: entries.filter((e: any) => !(e.entryId ?? '').startsWith('tweet-')).slice(0, 3).map((e: any) => ({
                 id: e.entryId ?? e.entry_id,
                 contentKeys: Object.keys(e.content ?? {}),
-                hasContentContent: !!e.content?.content,
-                contentContentKeys: e.content?.content ? Object.keys(e.content.content) : null,
-                cursorValue: e.content?.content?.cursorValue ?? e.content?.content?.value,
-                cursorType: e.content?.content?.__typename ?? e.content?.content?.type,
+                entryType: e.content?.entryType,
+                contentType: e.content?.__typename,
               })),
-              contentKeys: entries[0] ? Object.keys(entries[0].content ?? {}) : null,
+              firstEntry: { entryId: entries[0]?.entryId, contentKeys: Object.keys(entries[0]?.content ?? {}), itemContentKeys: entries[0]?.content?.itemContent ? Object.keys(entries[0].content.itemContent) : null },
             },
           });
         }
