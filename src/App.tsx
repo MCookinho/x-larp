@@ -75,6 +75,13 @@ export default function App() {
   };
 
   useEffect(() => {
+    if (getAuthToken() && getCsrfToken()) {
+      setExtensionDetected(true);
+      if (!autoFetched.current) {
+        autoFetched.current = true;
+        handleAnalyze('MCookinho');
+      }
+    }
     function onExtensionLoaded() {
       setExtensionDetected(true);
       if (!autoFetched.current && getAuthToken() && getCsrfToken()) {
@@ -84,13 +91,6 @@ export default function App() {
     }
     window.addEventListener('larp-social-loaded', onExtensionLoaded as EventListener);
     return () => window.removeEventListener('larp-social-loaded', onExtensionLoaded as EventListener);
-  }, []);
-
-  useEffect(() => {
-    if (!autoFetched.current && getAuthToken() && getCsrfToken()) {
-      autoFetched.current = true;
-      handleAnalyze('MCookinho');
-    }
   }, []);
 
   useEffect(() => {
