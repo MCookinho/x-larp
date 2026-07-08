@@ -274,6 +274,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const uid = userId || extractUserResult(userResult)?.rest_id;
         if (!uid) return res.status(404).json({ error: 'User not found' });
 
+        // Verify userId by fetching the full user result
+        if (req.query._debug === '1') {
+          return res.json({ uid, userResult });
+        }
+
         const useReplies = req.query.mode === 'replies';
         const tweetHash = useReplies ? HASHES.UserTweetsAndReplies : HASHES.UserTweets;
         const url = graphqlUrl(base, tweetHash, useReplies ? 'UserTweetsAndReplies' : 'UserTweets');
