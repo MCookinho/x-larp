@@ -354,19 +354,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const nextCursor = extractCursor(result);
 
         if (!nextCursor && tweets.length > 0) {
-          const cursorEntries = result?.data?.user?.result?.timeline?.timeline?.instructions
-            ?.find((i: any) => (i.__typename ?? i.type) === 'TimelineAddEntries')
-            ?.entries?.filter((e: any) => e.entry_id?.includes('cursor')) ?? [];
+          const addEntries = result?.data?.user?.result?.timeline?.timeline?.instructions
+            ?.find((i: any) => (i.__typename ?? i.type) === 'TimelineAddEntries');
           return res.json({
             tweets,
             nextCursor,
             _debug: {
-              entryIds: cursorEntries.map((e: any) => ({
-                id: e.entry_id,
-                contentKeys: e.content ? Object.keys(e.content) : null,
-                cursorContent: e.content?.content ? Object.keys(e.content.content) : null,
-                cursorType: e.content?.content?.__typename ?? e.content?.content?.type,
-              })),
+              entryCount: addEntries?.entries?.length ?? addEntries?.entry?.length,
+              allEntryIds: (addEntries?.entries ?? addEntries?.entry ?? []).map((e: any) => e.entry_id),
+              sampleEntry: addEntries?.entries?.[0] ? Object.keys(addEntries.entries[0]) : addEntries?.entry?.[0] ? Object.keys(addEntries.entry[0]) : null,
             },
           });
         }
