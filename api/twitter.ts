@@ -71,15 +71,39 @@ function graphqlUrl(_base: string, hash: string, name: string) {
   return `https://x.com/i/api/graphql/${hash}/${name}`;
 }
 
+const FIELD_TOGGLES = {
+  withPayments: true,
+  withAuxiliaryUserLabels: true,
+  withArticleRichContentState: false,
+  withArticlePlainText: false,
+  withArticleSummaryText: false,
+  withArticleVoiceOver: false,
+  withGrokAnalyze: false,
+  withDisallowedReplyControls: false,
+};
+
+function buildQueryParams(variables: Record<string, unknown>): URLSearchParams {
+  const p = new URLSearchParams({
+    variables: JSON.stringify(variables),
+    features: JSON.stringify(FEATURES),
+  });
+  // Only include truthy fieldToggles
+  const ft: Record<string, boolean> = {};
+  for (const [k, v] of Object.entries(FIELD_TOGGLES)) {
+    if (v) ft[k] = v;
+  }
+  if (Object.keys(ft).length > 0) {
+    p.set('fieldToggles', JSON.stringify(ft));
+  }
+  return p;
+}
+
 async function graphqlGet(
   url: string,
   variables: Record<string, unknown>,
   guestToken: string,
 ): Promise<any> {
-  const params = new URLSearchParams({
-    variables: JSON.stringify(variables),
-    features: JSON.stringify(FEATURES),
-  });
+  const params = buildQueryParams(variables);
   const res = await fetch(`${url}?${params}`, {
     headers: {
       Authorization: `Bearer ${BEARER_TOKEN}`,
@@ -104,10 +128,7 @@ async function graphqlGetAuth(
   authToken: string,
   csrfToken: string,
 ): Promise<any> {
-  const params = new URLSearchParams({
-    variables: JSON.stringify(variables),
-    features: JSON.stringify(FEATURES),
-  });
+  const params = buildQueryParams(variables);
   const res = await fetch(`${url}?${params}`, {
     headers: {
       Authorization: `Bearer ${BEARER_TOKEN}`,
