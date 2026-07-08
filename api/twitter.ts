@@ -340,10 +340,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           ? await graphqlGetAuth(url, variables, authToken!, csrfToken!)
           : await graphqlGet(url, variables, guestToken);
 
+        const instructions = result?.data?.user?.result?.timeline?.timeline?.instructions ?? [];
         const tweets = extractTweets(result);
         const nextCursor = extractCursor(result);
 
-        return res.json({ tweets, nextCursor });
+        return res.json({
+          tweets,
+          nextCursor,
+          _debug: {
+            instTypes: instructions.map((i: any) => i.__typename ?? i.type ?? '?'),
+            hasResult: !!result?.data?.user?.result,
+            hasTimeline: !!result?.data?.user?.result?.timeline,
+            uid,
+            count: variables.count,
+            resultKeys: Object.keys(result ?? {}),
+          },
+        });
       }
 
       default:
