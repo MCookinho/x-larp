@@ -4,6 +4,10 @@
   "version": "1.0.0",
   "description": "Extrai cookies de sessão do X.com e envia pro X LARP — um clique e pronto!",
   "homepage_url": "https://mcookinho.github.io/x-larp/",
+  "developer": {
+    "name": "MCookinho",
+    "url": "https://github.com/MCookinho"
+  },
   "permissions": ["cookies", "storage"],
   "host_permissions": [
     "https://x.com/*",
@@ -39,5 +43,11 @@
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "larp-social@mcookinho.github.io",
+      "strict_min_version": "112.0"
+    }
   }
 }

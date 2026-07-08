@@ -7,11 +7,12 @@ const src = 'browser-extension';
 
 if (!existsSync(extDir)) mkdirSync(extDir, { recursive: true });
 
-const ignore = ['.svg'];
+const ignoreSvg = (f) => !f.endsWith('.svg');
+const ignoreScreenshots = (f) => !f.includes('screenshots');
 
 cpSync(src, extDir, {
   recursive: true,
-  filter: (f) => !ignore.some((e) => f.endsWith(e)),
+  filter: (f) => ignoreSvg(f) && ignoreScreenshots(f),
 });
 
 function crc32(buf) {

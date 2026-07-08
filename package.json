@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build && node scripts/zip-extension.js",
     "lint": "oxlint",
     "preview": "vite preview",
-    "vercel": "vercel dev"
+    "vercel": "vercel dev",
+    "store-assets": "node scripts/generate-store-assets.js"
   },
   "dependencies": {
     "react": "^19.2.7",
