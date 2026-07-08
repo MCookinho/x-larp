@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Background } from './components/Background';
 import { Header } from './components/Header';
 import { StatsCard } from './components/StatsCard';
@@ -37,16 +37,7 @@ export default function App() {
   const [derived, setDerived] = useState<DerivedData | null>(null);
   const [extensionDetected, setExtensionDetected] = useState(false);
 
-  const hasAuth = !!(getAuthToken() && getCsrfToken());
-
-  useEffect(() => {
-    function onExtensionLoaded() {
-      setExtensionDetected(true);
-    }
-    window.addEventListener('larp-social-loaded', onExtensionLoaded as EventListener);
-    return () => window.removeEventListener('larp-social-loaded', onExtensionLoaded as EventListener);
-  }, []);
-
+  const autoFetched = useRef(false);
   const handleConfigChange = () => setConfigured(isConfigured());
 
   const handleAnalyze = async (user: string) => {
@@ -56,10 +47,13 @@ export default function App() {
     setRealUser(null);
     setRealTweets([]);
 
-    if (configured) {
+    const cfg = isConfigured();
+    const auth = !!(getAuthToken() && getCsrfToken());
+
+    if (cfg) {
       try {
         const userData = await fetchScrapedUser(user);
-        const tweets = hasAuth
+        const tweets = auth
           ? await fetchAllTweets(user)
           : (await fetchScrapedTweets(user, 100)).tweets;
         setRealUser(userData);
@@ -79,6 +73,25 @@ export default function App() {
       setIsLoading(false);
     }, 1500);
   };
+
+  useEffect(() => {
+    function onExtensionLoaded() {
+      setExtensionDetected(true);
+      if (!autoFetched.current && getAuthToken() && getCsrfToken()) {
+        autoFetched.current = true;
+        handleAnalyze('MCookinho');
+      }
+    }
+    window.addEventListener('larp-social-loaded', onExtensionLoaded as EventListener);
+    return () => window.removeEventListener('larp-social-loaded', onExtensionLoaded as EventListener);
+  }, []);
+
+  useEffect(() => {
+    if (!autoFetched.current && getAuthToken() && getCsrfToken()) {
+      autoFetched.current = true;
+      handleAnalyze('MCookinho');
+    }
+  }, []);
 
   useEffect(() => {
     if (error) {
@@ -129,14 +142,14 @@ export default function App() {
           </div>
           <p className="loading-text">
             {configured
-              ? hasAuth
+              ? getAuthToken() && getCsrfToken()
                 ? 'Pegando todos os tweets (paginando com seus cookies)...'
                 : 'Extraindo dados reais do Twitter...'
               : 'Hackeando o X pra extrair seus dados...'}
             <br />
             <small>
               {configured
-                ? hasAuth
+                ? getAuthToken() && getCsrfToken()
                   ? '(autenticado com seus cookies 🔑)'
                   : '(usando os endpoints secretos do Twitter 🤫)'
                 : '(ou só gerando números aleatórios, você nunca saberá)'}
