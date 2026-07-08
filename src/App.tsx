@@ -111,6 +111,7 @@ export default function App() {
         onAnalyze={handleAnalyze}
         isLoading={isLoading}
         onOpenSettings={() => setSettingsOpen(true)}
+        extensionDetected={extensionDetected}
       />
 
       <Settings

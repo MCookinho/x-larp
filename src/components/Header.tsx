@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getAuthToken, getCsrfToken } from '../services/api';
 import { ConnectModal } from './ConnectModal';
 
@@ -6,13 +6,18 @@ interface HeaderProps {
   onAnalyze: (username: string) => void;
   isLoading: boolean;
   onOpenSettings: () => void;
+  extensionDetected?: boolean;
 }
 
-export function Header({ onAnalyze, isLoading, onOpenSettings: _onOpenSettings }: HeaderProps) {
+export function Header({ onAnalyze, isLoading, onOpenSettings: _onOpenSettings, extensionDetected }: HeaderProps) {
   const [input, setInput] = useState('');
   const [connectOpen, setConnectOpen] = useState(false);
 
   const hasAuth = !!(getAuthToken() && getCsrfToken());
+
+  useEffect(() => {
+    if (extensionDetected && !input) setInput('MCookinho');
+  }, [extensionDetected]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +48,7 @@ export function Header({ onAnalyze, isLoading, onOpenSettings: _onOpenSettings }
           <span className="input-prefix">@</span>
           <input
             type="text"
-            placeholder="coloca teu @ aqui (ex: MCookinho)"
+            placeholder={extensionDetected ? 'MCookinho' : 'coloca teu @ aqui (ex: MCookinho)'}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             className="search-input"
