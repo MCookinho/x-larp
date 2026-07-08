@@ -336,6 +336,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           ? await graphqlGetAuth(url, variables, authToken!, csrfToken!)
           : await graphqlGet(url, variables, guestToken);
 
+        if (req.query.debug === '1') {
+          return res.json(result);
+        }
+
         const tweets = extractTweets(result);
         const nextCursor = extractCursor(result);
 
