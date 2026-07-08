@@ -120,9 +120,17 @@ async function graphqlGetAuth(
   return res.json();
 }
 
+function userResult(data: any): any {
+  return data?.data?.user?.result ?? data?.data?.user_result_by_screen_name?.result;
+}
+
+function timelineInstructions(data: any): any[] {
+  const u = userResult(data);
+  return u?.profile_timeline_v2?.timeline?.instructions ?? [];
+}
+
 function extractTweets(data: any): any[] {
-  const instructions =
-    data?.data?.user_result_by_screen_name?.result?.profile_timeline_v2?.timeline?.instructions ?? [];
+  const instructions = timelineInstructions(data);
   const tweets: any[] = [];
   for (const inst of instructions) {
     if (inst.__typename !== 'TimelineAddEntries') continue;
@@ -155,8 +163,7 @@ function extractTweets(data: any): any[] {
 }
 
 function extractCursor(data: any): string | null {
-  const instructions =
-    data?.data?.user_result_by_screen_name?.result?.profile_timeline_v2?.timeline?.instructions ?? [];
+  const instructions = timelineInstructions(data);
   for (const inst of instructions) {
     if (inst.__typename !== 'TimelineAddEntries') continue;
     for (const entry of inst.entries ?? []) {
@@ -172,7 +179,7 @@ function extractCursor(data: any): string | null {
 }
 
 function extractUserResult(data: any): any {
-  return data?.data?.user_result_by_screen_name?.result;
+  return userResult(data);
 }
 
 function formatUser(userResult: any) {
