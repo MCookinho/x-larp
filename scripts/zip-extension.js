@@ -1,19 +1,16 @@
-import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync, cpSync } from 'fs';
+import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync, cpSync, rmSync } from 'fs';
 import { join } from 'path';
 import { deflateSync } from 'zlib';
 
-const extDir = 'dist/browser-extension';
+const tmpDir = 'dist/.ext-tmp';
 const src = 'browser-extension';
 
-if (!existsSync(extDir)) mkdirSync(extDir, { recursive: true });
+if (existsSync(tmpDir)) rmSync(tmpDir, { recursive: true });
+mkdirSync(tmpDir, { recursive: true });
 
-const ignoreSvg = (f) => !f.endsWith('.svg');
-const ignoreScreenshots = (f) => !f.includes('screenshots');
+const ignoreFilter = (f) => !f.endsWith('.svg') && !f.includes('screenshots');
 
-cpSync(src, extDir, {
-  recursive: true,
-  filter: (f) => ignoreSvg(f) && ignoreScreenshots(f),
-});
+cpSync(src, tmpDir, { recursive: true, filter: ignoreFilter });
 
 function crc32(buf) {
   let c = 0xffffffff;
@@ -137,6 +134,7 @@ function createZip(outPath, dir) {
   writeFileSync(outPath, Buffer.concat(out));
 }
 
-createZip('dist/larp-social.zip', extDir);
+createZip('dist/larp-social.zip', tmpDir);
 cpSync('dist/larp-social.zip', 'dist/larp-social.xpi');
+rmSync(tmpDir, { recursive: true });
 console.log('✅ Extensão zipada: dist/larp-social.zip + .xpi');
