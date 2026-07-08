@@ -10,10 +10,18 @@ interface HeaderProps {
 }
 
 export function Header({ onAnalyze, isLoading, onOpenSettings: _onOpenSettings, extensionDetected }: HeaderProps) {
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(() => localStorage.getItem('xlarp_last_user') ?? '');
   const [connectOpen, setConnectOpen] = useState(false);
 
   const hasAuth = !!(getAuthToken() && getCsrfToken());
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const user = input.trim();
+    if (!user) return;
+    localStorage.setItem('xlarp_last_user', user);
+    onAnalyze(user);
+  };
 
   return (
     <header className="header">
@@ -34,23 +42,17 @@ export function Header({ onAnalyze, isLoading, onOpenSettings: _onOpenSettings, 
         </p>
       </div>
 
-      <form className="search-form" onSubmit={(e) => { e.preventDefault(); onAnalyze(extensionDetected ? 'MCookinho' : input.trim()); }}>
+      <form className="search-form" onSubmit={handleSubmit}>
         <div className="input-group">
-          {extensionDetected ? (
-            <span className="input-prefix" style={{ fontSize: '1.2em' }}>@MCookinho</span>
-          ) : (
-            <>
-              <span className="input-prefix">@</span>
-              <input
-                type="text"
-                placeholder="coloca teu @ aqui (ex: MCookinho)"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                className="search-input"
-              />
-            </>
-          )}
-          <button type="submit" className="search-btn" disabled={isLoading}>
+          <span className="input-prefix">@</span>
+          <input
+            type="text"
+            placeholder={extensionDetected ? 'seu @' : 'coloca teu @ aqui (ex: MCookinho)'}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            className="search-input"
+          />
+          <button type="submit" className="search-btn" disabled={isLoading || !input.trim()}>
             {isLoading ? '🤔 ANALISANDO...' : '🔍 DESMASCARAR'}
           </button>
         </div>

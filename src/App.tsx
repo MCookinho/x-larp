@@ -77,16 +77,18 @@ export default function App() {
   useEffect(() => {
     if (getAuthToken() && getCsrfToken()) {
       setExtensionDetected(true);
-      if (!autoFetched.current) {
+      const lastUser = localStorage.getItem('xlarp_last_user');
+      if (!autoFetched.current && lastUser) {
         autoFetched.current = true;
-        handleAnalyze('MCookinho');
+        handleAnalyze(lastUser);
       }
     }
     function onExtensionLoaded() {
       setExtensionDetected(true);
-      if (!autoFetched.current && getAuthToken() && getCsrfToken()) {
+      const lastUser = localStorage.getItem('xlarp_last_user');
+      if (!autoFetched.current && lastUser) {
         autoFetched.current = true;
-        handleAnalyze('MCookinho');
+        handleAnalyze(lastUser);
       }
     }
     window.addEventListener('larp-social-loaded', onExtensionLoaded as EventListener);
